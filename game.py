@@ -16,7 +16,7 @@ from time import sleep
 # Password
 def password():
     '''
-    Protected with the password ‘Room2617’.
+    Protected with the password 'Room2617'.
     > 3 opportunities to correctly enter the password.
     > Message displayed to program user for successful/unsuccessful attempt.
     > Exit message displayed in the event of 3 incorrect password attempts.
