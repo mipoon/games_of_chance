@@ -12,6 +12,7 @@ Games of Chance with Prizes:
 from IPython.display import clear_output
 from random import choice, randint
 from time import sleep
+import sqlite3
 
 # Password
 def password():
@@ -382,6 +383,7 @@ def final_results(user_list):
 # Playing the game
 # if password() < 3:
 if True:
+    db = sqlite3.connect("game.db")
     user_list = [[], [], [], [], []]
     user_tokens = 0
     instructions()
