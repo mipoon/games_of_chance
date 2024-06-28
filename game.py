@@ -380,7 +380,8 @@ def final_results(user_list):
     print(50 * "-")
 
 # Playing the game
-if password() < 3:
+# if password() < 3:
+if True:
     user_list = [[], [], [], [], []]
     user_tokens = 0
     instructions()
