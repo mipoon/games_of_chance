@@ -13,8 +13,15 @@ import sqlite3
 from random import choice, randint
 from time import sleep
 
-from IPython.display import clear_output
 
+def clear_output():
+    '''
+    Hacky way to simulate clearing the output screen
+
+    Args: None
+    Returns: None
+    '''
+    print("\n" * 100)
 
 # Password
 def password():
