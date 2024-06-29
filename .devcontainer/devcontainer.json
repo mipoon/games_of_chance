@@ -2,6 +2,7 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
 	"name": "Python 3",
+	"context": "..",
 	"dockerFile": "Dockerfile",
 	"customizations": {
         "vscode": {
@@ -9,7 +10,7 @@
         		"eamodio.gitlens"
 			]
         }
-    },
+    }
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -18,7 +19,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "python -m pip install --upgrade pip && pip install --user -r requirements.txt"
+	// "postCreateCommand": "python -m pip install --upgrade pip && pip install --user -r requirements.txt"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
