@@ -9,10 +9,19 @@ Games of Chance with Prizes:
 '''
 # Put cursor at the bottom of the page before running the code
 
-from IPython.display import clear_output
+import sqlite3
 from random import choice, randint
 from time import sleep
-import sqlite3
+
+
+def clear_output():
+    '''
+    Hacky way to simulate clearing the output screen
+
+    Args: None
+    Returns: None
+    '''
+    print("\n" * 100)
 
 # Password
 def password():
@@ -71,15 +80,11 @@ def guess_the_number(guess):
     '''
     base_tokens = 15
     num = randint(1, 10)
-    multiplier = abs(num - guess)
+    multiplier = abs(num - guess) + 1
     earned_tokens = base_tokens * multiplier
 
-    if multiplier == 0:
-        print("Tokens earned:", base_tokens, "\n")
-        return base_tokens
-    else:
-        print("Tokens earned:", earned_tokens, "\n")
-        return earned_tokens
+    print("Tokens earned:", earned_tokens, "\n")
+    return earned_tokens
 
 # 2. Flip a coin
 def flip_a_coin(guess):
@@ -123,12 +128,12 @@ def roll_the_dice():
     return earned_tokens
 
 # 1. Randomly select game
-def select_game():
+def select_minigame():
     '''
-    Randomly select game to play from a list.
+    Randomly select minigame to play from a list.
 
     Args: None
-    Returns: (int) Game number to play
+    Returns: (int) Minigame number to play
     '''
     return choice([1, 2, 3])
 
@@ -175,13 +180,13 @@ def spend_for_rarity(user_rarity, tokens):
 
     roll = choice(roll_rarity)
 
-    if (roll <= common):
+    if roll <= common:
         rarity = 'common'
-    elif (roll <= odd):
+    elif roll <= odd:
         rarity = 'odd'
-    elif (roll <= rare):
+    elif roll <= rare:
         rarity = 'rare'
-    elif (roll <= epic):
+    elif roll <= epic:
         rarity = 'epic'
     else:
         rarity = 'legendary'
@@ -215,14 +220,16 @@ def select_prize(rarity):
     # Roll random prize
     if rarity == "common":
         prize = choice(common)
-    if rarity == "odd":
+    elif rarity == "odd":
         prize = choice(odd)
-    if rarity == "rare":
+    elif rarity == "rare":
         prize = choice(rare)
-    if rarity == "epic":
+    elif rarity == "epic":
         prize = choice(epic)
-    if rarity == "legendary":
+    elif rarity == "legendary":
         prize = choice(legendary)
+    else:
+        raise ValueError("Invalid prize rarity")
 
     return prize
 
@@ -257,7 +264,7 @@ def refund_rerolls(user_list, prize, rarity):
     refund_amounts = [['common', 3], ['odd', 5], ['rare', 7], ['epic', 10], ['legendary', 20]]
     rarity_index = ['common', 'odd', 'rare', 'epic', 'legendary'].index(rarity)
     if prize in user_list[rarity_index]:
-        print("You already own this prize, refunding %s tokens" % refund_amounts[rarity_index][1])
+        print(f"You already own this prize, refunding {refund_amounts[rarity_index][1]} tokens")
         return refund_amounts[rarity_index][1]
     return 0
 
@@ -269,31 +276,29 @@ def game():
     Args: none
     Returns: none
     '''
-    global user_list
-    global user_tokens
+    user_list = [[], [], [], [], []]
+    user_tokens = 0
     # Money Games
-    for num in range(3):
-        game = select_game()
+    for _ in range(3):
+        minigame = select_minigame()
         # Guess the Number
-        if game == 1:
+        if minigame == 1:
             while True:
                 try:
                     user_guess = int(input("Guess the number 1 - 10\nThe FARTHER you are, the more tokens you'll earn!: "))
-                    if user_guess >= 1 and user_guess <= 10:
+                    if 1 <= user_guess <= 10:
                         break
-                    else:
-                        print("Plase enter a number 1 - 10")
+                    print("Please enter a number 1 - 10")
                 except ValueError:
                     print("Please enter a numerical value\n")
             user_tokens += guess_the_number(user_guess)
         # Flip a Coin
-        elif game == 2:
+        elif minigame == 2:
             while True:
                 user_guess = input(("Guess 'heads' or 'tails'\nIf you're correct, you'll gain a lot of tokens!: ")).lower()
                 if user_guess in ['heads', 'tails']:
                     break
-                else:
-                    print("Please enter 'heads' or 'tails'\n")
+                print("Please enter 'heads' or 'tails'\n")
             user_tokens += flip_a_coin(user_guess)
         # Roll the dice
         else:
@@ -346,7 +351,7 @@ def game():
         # Want to keep playing?
         while True:
             user_play = input("Enter 'continue' to keep going, or 'exit' to finish playing: ").lower()
-            if user_play != 'continue' and user_play != 'exit':
+            if user_play not in ('continue', 'exit'):
                 print("Invalid response\n")
             else:
                 break
@@ -372,9 +377,9 @@ def final_results(user_list):
     index = 0
     categories = ['Common', 'Odd', 'Rare', 'Epic', 'Legendary']
     for row in user_list:
-        print("%s -" % categories[index], end = "  ")
+        print(f"{categories[index]} -", end = "  ")
         for col in row:
-            print("%s" % col, end = ", ")
+            print(f"{col}", end = ", ")
 
         print("\n")
         index += 1
@@ -382,12 +387,9 @@ def final_results(user_list):
 
 # Playing the game
 # if password() < 3:
-if True:
-    db = sqlite3.connect("game.db")
-    user_list = [[], [], [], [], []]
-    user_tokens = 0
-    instructions()
-    game()
-    print("\nThanks for playing!\n")
+db = sqlite3.connect("game.db")
+instructions()
+game()
+print("\nThanks for playing!\n")
 
 sleep(10)

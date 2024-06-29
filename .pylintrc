@@ -1,0 +1,42 @@
+[MESSAGES CONTROL]
+# Disable some of the more strict warnings
+disable=
+    missing-docstring,
+    invalid-name,
+    too-many-arguments,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    too-few-public-methods,
+    no-member,
+    line-too-long
+
+[FORMAT]
+# Set the maximum line length to a more lenient value
+max-line-length=120
+
+[BASIC]
+# Allow shorter variable names for simplicity
+good-names=i,j,k,ex,Run,_
+
+[TYPECHECK]
+# Disable certain type checking errors that might be confusing for beginners
+disable=
+    no-member
+
+[REPORTS]
+# Only show the final score, don't need the detailed report
+output-format=text
+reports=no
+
+[REFACTORING]
+# Allow more complex code structures
+max-nested-blocks=5
+
+[DESIGN]
+# Allow more arguments and locals
+max-args=10
+max-locals=15
+max-returns=6
+max-branches=12
+max-statements=50
