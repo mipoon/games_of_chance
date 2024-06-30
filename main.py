@@ -13,7 +13,7 @@ import sqlite3
 from random import choice, randint
 from time import sleep
 
-from games import GuessTheNumber, HeadsOrTails, RollTheDice
+from games import GameFactory, GuessTheNumber, HeadsOrTails, RollTheDice
 
 
 def clear_output():
@@ -225,18 +225,7 @@ def start():
     user_tokens = 0
     # Money Games
     for _ in range(3):
-        game_choice = select_game()
-        game = None
-        # Guess the Number
-        if game_choice == 1:
-            game = GuessTheNumber()
-        # Flip a Coin
-        elif game_choice == 2:
-            game = HeadsOrTails()
-        # Roll the dice
-        else:
-            game = RollTheDice()
-
+        game = GameFactory.pick_random_game()
         earned_tokens = game.play()
         user_tokens += earned_tokens
     
