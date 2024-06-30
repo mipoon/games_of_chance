@@ -10,12 +10,11 @@ class GameFactory:
     def create_game(game_choice):
         if game_choice == 1:
             return GuessTheNumber()
-        elif game_choice == 2:
+        if game_choice == 2:
             return HeadsOrTails()
-        elif game_choice == 3:
+        if game_choice == 3:
             return RollTheDice()
-        else:
-            raise ValueError("Invalid game type specified.")
+        raise ValueError("Invalid game type specified.")
 
     @staticmethod
     def pick_random_game():

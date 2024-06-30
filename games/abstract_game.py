@@ -4,7 +4,7 @@ class AbstractGame(ABC):
     def __init__(self) -> None:
         super().__init__()
         self._tokens = 0
-    
+
     def add_tokens(self, numberOfTokens):
         self._tokens += numberOfTokens
 
@@ -15,4 +15,3 @@ class AbstractGame(ABC):
     def play(self):
         self._play_game()
         return self._tokens
-

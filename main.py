@@ -10,10 +10,10 @@ Games of Chance with Prizes:
 # Put cursor at the bottom of the page before running the code
 
 import sqlite3
-from random import choice, randint
+from random import choice
 from time import sleep
 
-from games import GameFactory, GuessTheNumber, HeadsOrTails, RollTheDice
+from games import GameFactory
 
 
 def clear_output():
@@ -228,7 +228,7 @@ def start():
         game = GameFactory.pick_random_game()
         earned_tokens = game.play()
         user_tokens += earned_tokens
-    
+
     sleep(3)
     clear_output()
     print("You have", user_tokens, "tokens\n")
