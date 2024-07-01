@@ -26,5 +26,4 @@ class GuessTheNumber(AbstractGame):
         multiplier = abs(num - user_guess) + 1
         earned_tokens = base_tokens * multiplier
 
-        print("Tokens earned:", earned_tokens, "\n")
-        self.add_tokens(earned_tokens)
+        return earned_tokens

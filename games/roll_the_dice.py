@@ -22,5 +22,5 @@ class RollTheDice(AbstractGame):
         multip = roll1 + roll2
         earned_tokens = base_tokens * multip
         print("You rolled a", multip)
-        print("Tokens earned from this game:", earned_tokens, "\n")
-        self.add_tokens(earned_tokens)
+
+        return earned_tokens

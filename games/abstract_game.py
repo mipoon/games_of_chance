@@ -13,5 +13,7 @@ class AbstractGame(ABC):
         pass
 
     def play(self):
-        self._play_game()
+        earned_tokens = self._play_game()
+        print("Tokens earned:", earned_tokens, "\n")
+        self.add_tokens(earned_tokens)
         return self._tokens

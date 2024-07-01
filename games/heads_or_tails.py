@@ -26,5 +26,4 @@ class HeadsOrTails(AbstractGame):
         else:
             earned_tokens = base_tokens * 2
 
-        print("Tokens earned from this game:", earned_tokens, "\n")
-        self.add_tokens(earned_tokens)
+        return earned_tokens
