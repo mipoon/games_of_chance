@@ -24,3 +24,4 @@ class RollTheDice(AbstractGame):
         print("You rolled a", multip)
 
         return earned_tokens
+    
