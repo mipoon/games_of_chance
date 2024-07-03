@@ -12,8 +12,18 @@ Games of Chance with Prizes:
 import sqlite3
 from random import choice
 from time import sleep
+from sqlalchemy import create_engine, text, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 from games import GameFactory
+
+Base = declarative_base()
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, nullable=False)
+    tokens = Column(Integer, nullable=False)
 
 
 def clear_output():
@@ -311,7 +321,38 @@ def final_results(user_list):
 
 # Playing the game
 # if password() < 3:
-db = sqlite3.connect("game.db")
+
+engine = create_engine('sqlite:///game.db')  # creates a database file named game.db
+
+Base.metadata.create_all(engine)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+new_user = User(username='user1', tokens=30)
+session.add(new_user)
+
+session.commit()
+
+print("User inserted successfully")
+
+# db = sqlite3.connect("game.db")
+# engine = create_engine("sqlite+pysqlite:///:memory:", echo=True)
+# with engine.begin() as conn:
+#     conn.execute(text("CREATE TABLE some_table (username char, tokens int)"))
+#     conn.execute(
+#         text("INSERT INTO some_table (username, tokens) VALUES (:x, :y)"),
+#         [{"x": "Michael", "y": 8}, {"x": "Daniel", "y": 10}],
+#     )
+#     result = conn.execute(text("SELECT * FROM some_table"))
+#     print(result.all())
+#     conn.execute(
+#         text("INSERT INTO some_table (username, tokens) VALUES (:x, :y)"),
+#         [{"x": "Noah", "y": 12}, {"x": "Matthew", "y": 14}],
+#     )
+#     result = conn.execute(text("SELECT username, tokens FROM some_table"))
+#     for x, y in result:
+#         print(f"user: {x} tokens: {y}")
 instructions()
 start()
 print("\nThanks for playing!\n")
