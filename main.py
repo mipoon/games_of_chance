@@ -7,23 +7,13 @@ Games of Chance with Prizes:
 5. Re-rolls
 6. 1 hour timer
 '''
-# Put cursor at the bottom of the page before running the code
 
-import sqlite3
 from random import choice
 from time import sleep
-from sqlalchemy import create_engine, text, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
 from games import GameFactory
-
-Base = declarative_base()
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    tokens = Column(Integer, nullable=False)
+from database.database import SessionLocal, init_db
+from database.models import User
 
 
 def clear_output():
@@ -36,6 +26,8 @@ def clear_output():
     print("\n" * 100)
 
 # Password
+
+
 def password():
     '''
     Protected with the password 'Room2617'.
@@ -63,6 +55,8 @@ def password():
     return counter
 
 # Instructions
+
+
 def instructions():
     '''
     Display game instructions.
@@ -93,6 +87,7 @@ def select_game():
     return choice([1, 2, 3])
 
 # Spend for rarity
+
 
 def spend_for_rarity(user_rarity, tokens):
     '''
@@ -153,6 +148,7 @@ def spend_for_rarity(user_rarity, tokens):
 
 # Select prize
 
+
 def select_prize(rarity):
     '''
     Args: rarity from spend_for_rarity
@@ -162,7 +158,8 @@ def select_prize(rarity):
     Returns: selected prize
     '''
     # Prize Lists:
-    common = ["Cat", "Dog", "Gerbil", "Guinea Pig", "Hamster", "Mouse", "Pig", "Starfish"]
+    common = ["Cat", "Dog", "Gerbil", "Guinea Pig",
+              "Hamster", "Mouse", "Pig", "Starfish"]
 
     odd = ["Bird", "Chicken", "Fish", "Lizard", "Snake", "Spider", "Turkey"]
 
@@ -189,6 +186,8 @@ def select_prize(rarity):
     return prize
 
 # Add prizes to user's prize list
+
+
 def append_prizes(user_list, prize, rarity):
     """
     Add prize to user's list.
@@ -205,6 +204,8 @@ def append_prizes(user_list, prize, rarity):
     user_list[rarity_index].sort()
 
 # Find rerolls
+
+
 def refund_rerolls(user_list, prize, rarity):
     '''
     Refund tokens if prize is already owned.
@@ -216,14 +217,18 @@ def refund_rerolls(user_list, prize, rarity):
     Returns: (int) Refunded tokens
     '''
     # 'Inspired' by ChatGPT's work on append_prizes()
-    refund_amounts = [['common', 3], ['odd', 5], ['rare', 7], ['epic', 10], ['legendary', 20]]
+    refund_amounts = [['common', 3], ['odd', 5], [
+        'rare', 7], ['epic', 10], ['legendary', 20]]
     rarity_index = ['common', 'odd', 'rare', 'epic', 'legendary'].index(rarity)
     if prize in user_list[rarity_index]:
-        print(f"You already own this prize, refunding {refund_amounts[rarity_index][1]} tokens")
+        print(f"You already own this prize, refunding {
+              refund_amounts[rarity_index][1]} tokens")
         return refund_amounts[rarity_index][1]
     return 0
 
 # Main program (run the program)
+
+
 def start():
     '''
     Main function to run the game
@@ -248,17 +253,20 @@ def start():
         while True:
             try:
                 # Enter tokens
-                spend_tokens = int(input("\nEnter an amount of tokens\nEvery 3 tokens grants +1% chance of rolling your desired rarity: "))
+                spend_tokens = int(input(
+                    "\nEnter an amount of tokens\nEvery 3 tokens grants +1% chance of rolling your desired rarity: "))
                 if spend_tokens < 0:
                     print("You cannot spend a negative amount of tokens.")
                     continue
                 # Enter desired rarity
-                user_rarity = input("'Common'\n'Odd'\n'Rare'\n'Epic'\n'Legendary'\n\nEnter your desired rarity, or 'None': ").lower()
+                user_rarity = input(
+                    "'Common'\n'Odd'\n'Rare'\n'Epic'\n'Legendary'\n\nEnter your desired rarity, or 'None': ").lower()
                 if user_rarity not in ['common', 'odd', 'rare', 'epic', 'legendary', 'none']:
                     print("\nYou must enter a valid rarity\n")
                 # If the user enters too many tokens
                 else:
-                    rarity, extras = spend_for_rarity(user_rarity, spend_tokens)
+                    rarity, extras = spend_for_rarity(
+                        user_rarity, spend_tokens)
                     if (user_tokens - spend_tokens + extras) < 20:
                         print("You do not have enough tokens to continue playing")
                     else:
@@ -284,7 +292,8 @@ def start():
 
         # Want to keep playing?
         while True:
-            user_play = input("Enter 'continue' to keep going, or 'exit' to finish playing: ").lower()
+            user_play = input(
+                "Enter 'continue' to keep going, or 'exit' to finish playing: ").lower()
             if user_play not in ('continue', 'exit'):
                 print("Invalid response\n")
             else:
@@ -296,6 +305,8 @@ def start():
     final_results(user_list)
 
 # Print 'final results':
+
+
 def final_results(user_list):
     '''
     Display final results.
@@ -311,50 +322,40 @@ def final_results(user_list):
     index = 0
     categories = ['Common', 'Odd', 'Rare', 'Epic', 'Legendary']
     for row in user_list:
-        print(f"{categories[index]} -", end = "  ")
+        print(f"{categories[index]} -", end="  ")
         for col in row:
-            print(f"{col}", end = ", ")
+            print(f"{col}", end=", ")
 
         print("\n")
         index += 1
     print(50 * "-")
 
-# Playing the game
-# if password() < 3:
 
-engine = create_engine('sqlite:///game.db')  # creates a database file named game.db
+def main():
+    ''' Playing the game'''
+    # if password() < 3:
+    try:
+        init_db()
+        session = SessionLocal()
+        user = User(username='Player1', tokens=30)
+        session.add(user)
+        print(f"Added new entry for Player1")
+        session.commit()
+        print("User saved!")
+    except Exception as e:
+        # Rollback the session in case of an error
+        session.rollback()
+        print(f"Session rolled back. Error: {e}")
+    finally:
+        # Close the session
+        session.close()
 
-Base.metadata.create_all(engine)
+    instructions()
+    start()
+    print("\nThanks for playing!\n")
 
-Session = sessionmaker(bind=engine)
-session = Session()
+    sleep(10)
 
-new_user = User(username='user1', tokens=30)
-session.add(new_user)
 
-session.commit()
-
-print("User inserted successfully")
-
-# db = sqlite3.connect("game.db")
-# engine = create_engine("sqlite+pysqlite:///:memory:", echo=True)
-# with engine.begin() as conn:
-#     conn.execute(text("CREATE TABLE some_table (username char, tokens int)"))
-#     conn.execute(
-#         text("INSERT INTO some_table (username, tokens) VALUES (:x, :y)"),
-#         [{"x": "Michael", "y": 8}, {"x": "Daniel", "y": 10}],
-#     )
-#     result = conn.execute(text("SELECT * FROM some_table"))
-#     print(result.all())
-#     conn.execute(
-#         text("INSERT INTO some_table (username, tokens) VALUES (:x, :y)"),
-#         [{"x": "Noah", "y": 12}, {"x": "Matthew", "y": 14}],
-#     )
-#     result = conn.execute(text("SELECT username, tokens FROM some_table"))
-#     for x, y in result:
-#         print(f"user: {x} tokens: {y}")
-instructions()
-start()
-print("\nThanks for playing!\n")
-
-sleep(10)
+if __name__ == "__main__":
+    main()
