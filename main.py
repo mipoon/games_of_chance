@@ -222,8 +222,7 @@ def refund_rerolls(user_list, prize, rarity):
         'rare', 7], ['epic', 10], ['legendary', 20]]
     rarity_index = ['common', 'odd', 'rare', 'epic', 'legendary'].index(rarity)
     if prize in user_list[rarity_index]:
-        print(f"You already own this prize, refunding {
-              refund_amounts[rarity_index][1]} tokens")
+        print(f"You already own this prize, refunding {refund_amounts[rarity_index][1]} tokens")
         return refund_amounts[rarity_index][1]
     return 0
 
