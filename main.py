@@ -9,6 +9,7 @@ Games of Chance with Prizes:
 '''
 
 from random import choice
+from sqlite3 import IntegrityError
 from time import sleep
 
 from games import GameFactory
@@ -339,10 +340,10 @@ def main():
         session = SessionLocal()
         user = User(username='Player1', tokens=30)
         session.add(user)
-        print(f"Added new entry for Player1")
+        print("Added new entry for Player1")
         session.commit()
         print("User saved!")
-    except Exception as e:
+    except IntegrityError as e:
         # Rollback the session in case of an error
         session.rollback()
         print(f"Session rolled back. Error: {e}")
