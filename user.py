@@ -3,7 +3,7 @@ class User():
         self.username = "Test User"
         self.tokens = 0
         self.prizes = [[], [], [], [], []]
-    
+
     def add_tokens(self, tokens):
         self.tokens += tokens
 

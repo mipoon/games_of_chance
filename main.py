@@ -41,5 +41,4 @@ from play_session import PlaySession
 if __name__ == "__main__":
     # Playing the game
     # if password() < 3:
-    session = PlaySession().run_session()
-    
+    PlaySession().run_session()
