@@ -1,6 +1,5 @@
 from random import choice
 from time import sleep
-from user import User
 
 class PrizeBooth():
 
