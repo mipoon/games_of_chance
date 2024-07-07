@@ -1,4 +1,4 @@
-.PHONY: lint install
+.PHONY: lint install cover
 
 # Install dependencies
 install:
@@ -7,3 +7,7 @@ install:
 # Run pylint on all Python files
 lint:
 	pylint $$(git ls-files '*.py') || true
+
+# Run Pytest and display coverage report
+cover:
+	coverage run -m pytest && coverage report -m
