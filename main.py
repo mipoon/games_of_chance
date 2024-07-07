@@ -10,8 +10,10 @@ Games of Chance with Prizes:
 # Put cursor at the bottom of the page before running the code
 
 import sqlite3
-from random import choice, randint
+from random import choice
 from time import sleep
+
+from games import GameFactory
 
 
 def clear_output():
@@ -69,66 +71,9 @@ def instructions():
     print("6. If you roll a prize that you already own, you might get some tokens back as a refund.")
     print("\nGood luck and have fun!")
 
-# Money Games
-# 1. Guess the number
-def guess_the_number(guess):
-    '''
-    Guess the number game.
-
-    Args: (int) User's guessed number between 1 and 10
-    Returns: (int) Tokens earned
-    '''
-    base_tokens = 15
-    num = randint(1, 10)
-    multiplier = abs(num - guess) + 1
-    earned_tokens = base_tokens * multiplier
-
-    print("Tokens earned:", earned_tokens, "\n")
-    return earned_tokens
-
-# 2. Flip a coin
-def flip_a_coin(guess):
-    '''
-    Flip a coin game.
-
-    Args: (str) User's guess "heads" or "tails"
-    Returns: (int) Tokens earned
-    '''
-    base_tokens = 10
-    coin = ["heads", "tails"]
-    flip = choice(coin)
-
-    if guess == flip:
-        earned_tokens = base_tokens * 10
-    else:
-        earned_tokens = base_tokens * 2
-
-    print("Tokens earned from this game:", earned_tokens, "\n")
-    return earned_tokens
-
-# 3. Roll the dice
-def roll_the_dice():
-    '''
-    Roll the dice game.
-
-    Args: None
-    Returns: (int) Tokens earned
-    '''
-    base_tokens = 15
-    roll1 = randint(1, 6)
-    roll2 = randint(1, 6)
-
-    print("Rolling...\n")
-    sleep(3)
-
-    multip = roll1 + roll2
-    earned_tokens = base_tokens * multip
-    print("You rolled a", multip)
-    print("Tokens earned from this game:", earned_tokens, "\n")
-    return earned_tokens
 
 # 1. Randomly select game
-def select_minigame():
+def select_game():
     '''
     Randomly select minigame to play from a list.
 
@@ -269,7 +214,7 @@ def refund_rerolls(user_list, prize, rarity):
     return 0
 
 # Main program (run the program)
-def game():
+def start():
     '''
     Main function to run the game
 
@@ -280,30 +225,9 @@ def game():
     user_tokens = 0
     # Money Games
     for _ in range(3):
-        minigame = select_minigame()
-        # Guess the Number
-        if minigame == 1:
-            while True:
-                try:
-                    user_guess = int(input("Guess the number 1 - 10\nThe FARTHER you are, the more tokens you'll earn!: "))
-                    if 1 <= user_guess <= 10:
-                        break
-                    print("Please enter a number 1 - 10")
-                except ValueError:
-                    print("Please enter a numerical value\n")
-            user_tokens += guess_the_number(user_guess)
-        # Flip a Coin
-        elif minigame == 2:
-            while True:
-                user_guess = input(("Guess 'heads' or 'tails'\nIf you're correct, you'll gain a lot of tokens!: ")).lower()
-                if user_guess in ['heads', 'tails']:
-                    break
-                print("Please enter 'heads' or 'tails'\n")
-            user_tokens += flip_a_coin(user_guess)
-        # Roll the dice
-        else:
-            print("You don't have to do anything here, just hope you have good luck!")
-            user_tokens += roll_the_dice()
+        game = GameFactory.pick_random_game()
+        earned_tokens = game.play()
+        user_tokens += earned_tokens
 
     sleep(3)
     clear_output()
@@ -389,7 +313,7 @@ def final_results(user_list):
 # if password() < 3:
 db = sqlite3.connect("game.db")
 instructions()
-game()
+start()
 print("\nThanks for playing!\n")
 
 sleep(10)
