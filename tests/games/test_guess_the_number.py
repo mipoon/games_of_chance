@@ -1,10 +1,12 @@
+from unittest.mock import patch
 import pytest
-from unittest.mock import MagicMock, patch
 from games.guess_the_number import GuessTheNumber
 
-@pytest.fixture
-def game():
+
+@pytest.fixture(name="game")
+def fixture_game():
     return GuessTheNumber()
+
 
 def test_guess_the_number_valid_input(game):
     # Mock the input function to simulate user input
@@ -17,12 +19,12 @@ def test_guess_the_number_valid_input(game):
             # The earned tokens are base_tokens * multiplier = 15 * 6 = 90
             assert earned_tokens == 90
 
+
 def test_play_game_value_error_handled_gracefully(capsys, game):
     # Mock the input function to simulate user input
     with patch('builtins.input', side_effect=['a', '11', '10']):
         # Mock the randint function to return a consistent number
         with patch('games.guess_the_number.randint', return_value=10):
-            game = GuessTheNumber()
             earned_tokens = game.play()
 
             # Capture the printed output

@@ -39,4 +39,4 @@ jobs:
 
     - name: Run Pylint in Docker container
       run: |
-        docker run myapp pylint $(git ls-files '*.py')
+        docker run --rm myapp pylint $(git ls-files '*.py')
