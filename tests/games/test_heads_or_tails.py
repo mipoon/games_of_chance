@@ -1,10 +1,10 @@
-import pytest
 from unittest.mock import patch
+import pytest
 from games.heads_or_tails import HeadsOrTails
 
 
-@pytest.fixture
-def game():
+@pytest.fixture(name="game")
+def fixture_game():
     return HeadsOrTails()
 
 

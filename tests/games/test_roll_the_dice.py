@@ -1,17 +1,17 @@
-import pytest
 from unittest.mock import patch
+import pytest
 from games.roll_the_dice import RollTheDice
 
 
-@pytest.fixture
-def game():
+@pytest.fixture(name="game")
+def fixture_game():
     return RollTheDice()
 
 
 def test_play_game(capsys, game):
     with patch('games.roll_the_dice.randint', side_effect=[1, 3]):
         with patch('games.roll_the_dice.sleep', return_value=None):
-            earned_tokens = game._play_game()
+            earned_tokens = game.play()
 
             # Capture the printed output
             captured = capsys.readouterr()
