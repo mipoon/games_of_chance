@@ -1,7 +1,7 @@
 from time import sleep
 from prize_booth import PrizeBooth
 from user import User
-from games.game_factory import GameFactory
+from games.game_loader import GameLoader
 
 
 class PlaySession():
@@ -52,7 +52,7 @@ class PlaySession():
         '''
         # Money Games
         for _ in range(3):
-            game = GameFactory.pick_random_game()
+            game = GameLoader.pick_random_game()
             earned_tokens = game.play()
             self.user.tokens += earned_tokens
 
