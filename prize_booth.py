@@ -53,7 +53,7 @@ class PrizeBooth():
             refunded_tokens = self.refund_rerolls(prize, rarity)
             self.user.tokens += refunded_tokens
             if refunded_tokens == 0:
-                self.user.append_prizes(prize, rarity)
+                self.user.add_prize(prize, rarity)
 
             print("\nYou have", self.user.tokens, "tokens left.\n")
 

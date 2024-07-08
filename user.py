@@ -11,7 +11,7 @@ class User():
         self.tokens -= tokens
 
     # Add prizes to user's prize list
-    def append_prizes(self, prize, rarity):
+    def add_prize(self, prize, rarity):
         """
         Add prize to user's list.
 
