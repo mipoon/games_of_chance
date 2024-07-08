@@ -10,5 +10,20 @@ class User():
     def subtract_tokens(self, tokens):
         self.tokens -= tokens
 
-    def add_prize(self, prize):
-        self.prizes.append(prize)
+    # Add prizes to user's prize list
+    def append_prizes(self, prize, rarity):
+        """
+        Add prize to user's list.
+
+        Args:
+            prize: (str) Prize to add
+            rarity: (str) Rarity of the prize
+        Returns: None
+        """
+        # Refactored by ChatGPT
+        rarity_index = ['common', 'odd', 'rare',
+                        'epic', 'legendary'].index(rarity)
+        self.prizes[rarity_index].append(prize)
+        self.prizes[rarity_index].sort()
+
+

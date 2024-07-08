@@ -53,7 +53,7 @@ class PrizeBooth():
             refunded_tokens = self.refund_rerolls(prize, rarity)
             self.user.tokens += refunded_tokens
             if refunded_tokens == 0:
-                self.append_prizes(prize, rarity)
+                self.user.append_prizes(prize, rarity)
 
             print("\nYou have", self.user.tokens, "tokens left.\n")
 
@@ -163,22 +163,6 @@ class PrizeBooth():
             raise ValueError("Invalid prize rarity")
 
         return prize
-
-    # Add prizes to user's prize list
-    def append_prizes(self, prize, rarity):
-        """
-        Add prize to user's list.
-
-        Args:
-            prize: (str) Prize to add
-            rarity: (str) Rarity of the prize
-        Returns: None
-        """
-        # Refactored by ChatGPT
-        rarity_index = ['common', 'odd', 'rare',
-                        'epic', 'legendary'].index(rarity)
-        self.user.prizes[rarity_index].append(prize)
-        self.user.prizes[rarity_index].sort()
 
     # Find rerolls
     def refund_rerolls(self, prize, rarity):
