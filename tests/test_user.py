@@ -1,8 +1,8 @@
 import pytest
 from user import User
 
-@pytest.fixture
-def user():
+@pytest.fixture(name="user")
+def my_user():
     return User()
 
 def test_user_initialized(user):
@@ -21,7 +21,7 @@ def test_subtract_tokens(user):
 
 def test_subtract_tokens_invalid(user):
     user.tokens = 30
-    assert(user.subtract_tokens(31) == False)
+    assert user.subtract_tokens(31) is False
     assert user.tokens == 30
 
 def test_add_prize(user):
@@ -31,4 +31,4 @@ def test_add_prize(user):
     print(user.prizes[1])
     assert user.prizes[1] == ['alligator', 'turtle']
     assert user.prizes[0] == ['owl']
-    # TODO: better unit tests. E.g., mock append and sort, assert on call frequency
+    # write better unit tests. E.g., mock append and sort, assert on call frequency
