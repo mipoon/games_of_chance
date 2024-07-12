@@ -8,7 +8,10 @@ class User():
         self.tokens += tokens
 
     def subtract_tokens(self, tokens):
-        self.tokens -= tokens
+        if tokens <= self.tokens:
+            self.tokens -= tokens
+            return True
+        return False
 
     # Add prizes to user's prize list
     def add_prize(self, prize, rarity):
@@ -25,5 +28,3 @@ class User():
                         'epic', 'legendary'].index(rarity)
         self.prizes[rarity_index].append(prize)
         self.prizes[rarity_index].sort()
-
-
