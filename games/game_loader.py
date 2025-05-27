@@ -5,7 +5,7 @@ from .heads_or_tails import HeadsOrTails
 from .roll_the_dice import RollTheDice
 
 
-class GameFactory:
+class GameLoader:
 
     game_library = [GuessTheNumber, HeadsOrTails, RollTheDice]
     # # could import AbstractGame and use the line below instead but pylint hates that the concrete class imports don't get used
@@ -13,5 +13,5 @@ class GameFactory:
 
     @staticmethod
     def pick_random_game():
-        game_choice = choice(GameFactory.game_library)
+        game_choice = choice(GameLoader.game_library)
         return game_choice()

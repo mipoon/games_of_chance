@@ -1,1 +1,1 @@
-from .game_factory import GameFactory
+from .game_loader import GameLoader

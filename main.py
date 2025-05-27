@@ -7,6 +7,7 @@ Games of Chance with Prizes:
 5. Re-rolls
 6. 1 hour timer
 '''
+<<<<<<< HEAD
 
 from random import choice
 from sqlite3 import IntegrityError
@@ -359,3 +360,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+=======
+from play_session import PlaySession
+
+if __name__ == "__main__":
+    # Playing the game
+    PlaySession().run_session()
+>>>>>>> main
