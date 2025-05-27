@@ -1,3 +1,4 @@
 game.db
 __pycache__
 .coverage
+.venv
