@@ -29,6 +29,7 @@ class Database:
             return user_data
         except NoResultFound:
             print(f"No user found: {username}")
+            return None
 
     def add_user_data(self, username):
         session = SessionLocal()
@@ -43,6 +44,7 @@ class Database:
             # Rollback the session in case of an error
             session.rollback()
             print(f"Session rolled back. Error: {e}")
+            return None
         session.close()
 
     def update_user_data(self, player: Player):

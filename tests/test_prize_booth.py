@@ -1,6 +1,8 @@
 from unittest.mock import patch
 import pytest
 
+# pylint: disable=redefined-outer-name
+
 from prize_booth import PrizeBooth
 from player import Player
 

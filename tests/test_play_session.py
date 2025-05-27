@@ -1,6 +1,8 @@
 import pytest
 from play_session import PlaySession
 
+# pylint: disable=redefined-outer-name
+
 
 @pytest.fixture()
 def fixture_play_session():
