@@ -1,6 +1,6 @@
 import pytest
 from play_session import PlaySession
-from db import Database
+
 
 @pytest.fixture()
 def fixture_play_session():
@@ -10,12 +10,14 @@ def fixture_play_session():
 
 def test_run_session(mocker, fixture_play_session):
     play_session = fixture_play_session
-    mock_setup_player = mocker.patch.object(play_session, 'setup_player')
-    mock_display_instructions = mocker.patch.object(play_session, 'display_instructions')
-    mock_play_games = mocker.patch.object(play_session, 'play_games')
-    mock_spend_token = mocker.patch.object(play_session.prize_booth, 'spend_tokens')
-    mock_final_results = mocker.patch.object(play_session, 'final_results')
-    mock_conclude = mocker.patch.object(play_session, 'conclude')
+    mock_setup_player = mocker.patch.object(play_session, "setup_player")
+    mock_display_instructions = mocker.patch.object(
+        play_session, "display_instructions"
+    )
+    mock_play_games = mocker.patch.object(play_session, "play_games")
+    mock_spend_token = mocker.patch.object(play_session.prize_booth, "spend_tokens")
+    mock_final_results = mocker.patch.object(play_session, "final_results")
+    mock_conclude = mocker.patch.object(play_session, "conclude")
 
     play_session.run_session()
     mock_setup_player.assert_called_once()
@@ -47,9 +49,15 @@ def test_display_instructions(capsys):
 
 def test_setup_existing_player(mocker, fixture_play_session):
     play_session = fixture_play_session
-    mock_input = mocker.patch("builtins.input", return_value="mocked input")
-    mock_does_user_exist = mocker.patch.object(play_session.db, "does_user_exist", return_value=True)
-    mock_get_user_data = mocker.patch.object(play_session.db, "get_user_data", return_value={"tokens": 50, "prizes": [["Cat"], [], [], []]})
+    # mock_input = mocker.patch("builtins.input", return_value="mocked input")
+    mock_does_user_exist = mocker.patch.object(
+        play_session.db, "does_user_exist", return_value=True
+    )
+    mock_get_user_data = mocker.patch.object(
+        play_session.db,
+        "get_user_data",
+        return_value={"tokens": 50, "prizes": [["Cat"], [], [], []]},
+    )
 
     play_session.setup_player()
     assert play_session.player.name == "mocked input"
@@ -61,8 +69,10 @@ def test_setup_existing_player(mocker, fixture_play_session):
 
 def test_setup_new_player(mocker, fixture_play_session):
     play_session = fixture_play_session
-    mock_input = mocker.patch("builtins.input", return_value="mocked input")
-    mock_does_user_exist = mocker.patch.object(play_session.db, "does_user_exist", return_value=False)
+    # mock_input = mocker.patch("builtins.input", return_value="mocked input")
+    mock_does_user_exist = mocker.patch.object(
+        play_session.db, "does_user_exist", return_value=False
+    )
     mock_add_user_data = mocker.patch.object(play_session.db, "add_user_data")
 
     play_session.setup_player()
@@ -80,9 +90,8 @@ def test_play_games(capsys, mocker, fixture_play_session):
     mocker.patch("play_session.GameLoader.pick_random_game", return_value=mock_game)
 
     # Mock the play method on the mock game object to return 10 tokens each time it is called
-    mock_game.play = mocker.Mock(return_value=10)    
+    mock_game.play = mocker.Mock(return_value=10)
     play_session.player.tokens = 0
     play_session.play_games()
     capture = capsys.readouterr()
     assert "You have 30 tokens\n" in capture.out
-

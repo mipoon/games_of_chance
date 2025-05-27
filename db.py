@@ -4,10 +4,10 @@ from database.database import SessionLocal, init_db
 from database.models import User
 from player import Player
 
-class Database():
+
+class Database:
     def __init__(self) -> None:
         init_db()
-
 
     def does_user_exist(self, username):
         session = SessionLocal()
@@ -19,7 +19,6 @@ class Database():
             print(f"User {username} does not exist.")
             return False
 
-    
     def get_user_data(self, username):
         session = SessionLocal()
         user_data = {}
@@ -30,7 +29,6 @@ class Database():
             return user_data
         except NoResultFound:
             print(f"No user found: {username}")
-
 
     def add_user_data(self, username):
         session = SessionLocal()
@@ -47,8 +45,7 @@ class Database():
             print(f"Session rolled back. Error: {e}")
         session.close()
 
-
-    def update_user_data(self, player:Player):
+    def update_user_data(self, player: Player):
         session = SessionLocal()
         user = session.query(User).filter(User.username == player.name).one()
         user.tokens = player.tokens
@@ -56,7 +53,6 @@ class Database():
         session.commit()
         print("User data updated successfully.")
         session.close()
-
 
 
 # Password

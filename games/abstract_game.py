@@ -11,9 +11,9 @@ class AbstractGame(ABC):
 
     @abstractmethod
     def _play_game(self):
-        '''
+        """
         Implement this abstract method in a concrete class
-        '''
+        """
 
     def play(self):
         earned_tokens = self._play_game()

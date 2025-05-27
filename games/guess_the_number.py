@@ -3,18 +3,20 @@ from .abstract_game import AbstractGame
 
 
 class GuessTheNumber(AbstractGame):
-
     def _play_game(self):
-        '''
+        """
         Guess the number game.
 
         Args: (int) User's guessed number between 1 and 10
         Returns: (int) Tokens earned
-        '''
+        """
         while True:
             try:
-                user_guess = int(input(
-                    "Guess the number 1 - 10\nThe FARTHER you are, the more tokens you'll earn!: "))
+                user_guess = int(
+                    input(
+                        "Guess the number 1 - 10\nThe FARTHER you are, the more tokens you'll earn!: "
+                    )
+                )
                 if 1 <= user_guess <= 10:
                     break
                 print("Please enter a number 1 - 10")

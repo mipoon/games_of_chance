@@ -2,14 +2,15 @@ from random import randint
 from time import sleep
 from .abstract_game import AbstractGame
 
+
 class RollTheDice(AbstractGame):
     def _play_game(self):
-        '''
+        """
         Roll the dice game.
 
         Args: None
         Returns: (int) Tokens earned
-        '''
+        """
         print("You don't have to do anything here, just hope you have good luck!")
 
         base_tokens = 15

@@ -1,4 +1,4 @@
-class Player():
+class Player:
     def __init__(self) -> None:
         self.name = "Test Player"
         self.tokens = 0
@@ -24,7 +24,6 @@ class Player():
         Returns: None
         """
         # Refactored by ChatGPT
-        rarity_index = ['common', 'odd', 'rare',
-                        'epic', 'legendary'].index(rarity)
+        rarity_index = ["common", "odd", "rare", "epic", "legendary"].index(rarity)
         self.prizes[rarity_index].append(prize)
         self.prizes[rarity_index].sort()
