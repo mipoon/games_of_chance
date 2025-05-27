@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import JSON, Column, Integer, String
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -9,3 +9,4 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True, nullable=False)
     tokens = Column(Integer, nullable=False)
+    prizes = Column(JSON, nullable=False)

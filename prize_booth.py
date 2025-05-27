@@ -1,10 +1,12 @@
 from random import choice
 from time import sleep
 
+from player import Player
+
 class PrizeBooth():
 
-    def __init__(self, user) -> None:
-        self.user = user
+    def __init__(self, player: Player) -> None:
+        self.user = player
 
 
     def spend_tokens(self):

@@ -1,6 +1,6 @@
-class User():
+class Player():
     def __init__(self) -> None:
-        self.username = "Test User"
+        self.name = "Test Player"
         self.tokens = 0
         self.prizes = [[], [], [], [], []]
 

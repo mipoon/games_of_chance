@@ -1,4 +1,5 @@
 [run]
 source = .
 omit =
+    # main.py
     tests/*
