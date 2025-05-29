@@ -10,5 +10,8 @@ Games of Chance with Prizes:
 
 from play_session import PlaySession
 
-if __name__ == "__main__":
+def main():
     PlaySession().run_session()
+
+if __name__ == "__main__": # pragma: no cover
+    main()

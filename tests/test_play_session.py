@@ -49,9 +49,9 @@ def test_display_instructions(capsys):
     assert capture.out == expected_output
 
 
-def test_setup_existing_player(mocker, fixture_play_session):
+def test_setup_existing_player(mocker, fixture_play_session, capsys):
     play_session = fixture_play_session
-    # mock_input = mocker.patch("builtins.input", return_value="mocked input")
+    mock_input = mocker.patch("builtins.input", return_value="mocked input")
     mock_does_user_exist = mocker.patch.object(
         play_session.db, "does_user_exist", return_value=True
     )
@@ -62,6 +62,9 @@ def test_setup_existing_player(mocker, fixture_play_session):
     )
 
     play_session.setup_player()
+    captured = capsys.readouterr()
+    assert "Welcome back, mocked input! Let's play some more games!" in captured.out
+    assert f"Set up complete. You, mocked input, currently have 50 tokens, and your prize list is: [['Cat'], [], [], []]." in captured.out
     assert play_session.player.name == "mocked input"
     assert play_session.player.tokens == 50
     assert play_session.player.prizes == [["Cat"], [], [], []]
@@ -69,15 +72,18 @@ def test_setup_existing_player(mocker, fixture_play_session):
     mock_get_user_data.assert_called_once()
 
 
-def test_setup_new_player(mocker, fixture_play_session):
+def test_setup_new_player(mocker, fixture_play_session, capsys):
     play_session = fixture_play_session
-    # mock_input = mocker.patch("builtins.input", return_value="mocked input")
+    mock_input = mocker.patch("builtins.input", return_value="mocked input")
     mock_does_user_exist = mocker.patch.object(
         play_session.db, "does_user_exist", return_value=False
     )
     mock_add_user_data = mocker.patch.object(play_session.db, "add_user_data")
 
     play_session.setup_player()
+    captured = capsys.readouterr()
+    assert "Welcome, mocked input! Let's play some games!" in captured.out
+    assert f"Set up complete. You, mocked input, currently have 30 tokens, and your prize list is: [[], [], [], []]." in captured.out
     assert play_session.player.name == "mocked input"
     assert play_session.player.tokens == 30
     assert play_session.player.prizes == [[], [], [], []]
@@ -97,3 +103,23 @@ def test_play_games(capsys, mocker, fixture_play_session):
     play_session.play_games()
     capture = capsys.readouterr()
     assert "You have 30 tokens\n" in capture.out
+
+
+
+def test_final_results(capsys, fixture_play_session):
+    play_session = fixture_play_session
+    play_session.player.prizes = [["common_prize"], ["odd_prize"], [], [], ["legendary_prize"]]
+    play_session.final_results()
+    captured = capsys.readouterr()
+    assert "Common -  common_prize," in captured.out
+    assert "Odd -  odd_prize," in captured.out
+    assert "Legendary -  legendary_prize," in captured.out
+
+
+def test_conclude(mocker, fixture_play_session, capsys):
+    play_session = fixture_play_session
+    mock_update = mocker.patch.object(play_session.db, "update_user_data")
+    play_session.conclude()
+    captured = capsys.readouterr()
+    assert "\nThanks for playing!\n" in captured.out
+    mock_update.assert_called_once_with(play_session.player)
