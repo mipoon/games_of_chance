@@ -1,7 +1,5 @@
-import pytest
 from unittest.mock import patch
 import main
-from importlib import reload
 
 def test_main_function():
     with patch('play_session.PlaySession.run_session') as mock_run_session:

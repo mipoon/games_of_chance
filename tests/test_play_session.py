@@ -64,7 +64,7 @@ def test_setup_existing_player(mocker, fixture_play_session, capsys):
     play_session.setup_player()
     captured = capsys.readouterr()
     assert "Welcome back, mocked input! Let's play some more games!" in captured.out
-    assert f"Set up complete. You, mocked input, currently have 50 tokens, and your prize list is: [['Cat'], [], [], []]." in captured.out
+    assert "Set up complete. You, mocked input, currently have 50 tokens, and your prize list is: [['Cat'], [], [], []]." in captured.out
     assert play_session.player.name == "mocked input"
     assert play_session.player.tokens == 50
     assert play_session.player.prizes == [["Cat"], [], [], []]
@@ -83,7 +83,7 @@ def test_setup_new_player(mocker, fixture_play_session, capsys):
     play_session.setup_player()
     captured = capsys.readouterr()
     assert "Welcome, mocked input! Let's play some games!" in captured.out
-    assert f"Set up complete. You, mocked input, currently have 30 tokens, and your prize list is: [[], [], [], []]." in captured.out
+    assert "Set up complete. You, mocked input, currently have 30 tokens, and your prize list is: [[], [], [], []]." in captured.out
     assert play_session.player.name == "mocked input"
     assert play_session.player.tokens == 30
     assert play_session.player.prizes == [[], [], [], []]
