@@ -51,7 +51,7 @@ def test_display_instructions(capsys):
 
 def test_setup_existing_player(mocker, fixture_play_session, capsys):
     play_session = fixture_play_session
-    mock_input = mocker.patch("builtins.input", return_value="mocked input")
+    mocker.patch("builtins.input", return_value="mocked input")
     mock_does_user_exist = mocker.patch.object(
         play_session.db, "does_user_exist", return_value=True
     )
@@ -74,7 +74,7 @@ def test_setup_existing_player(mocker, fixture_play_session, capsys):
 
 def test_setup_new_player(mocker, fixture_play_session, capsys):
     play_session = fixture_play_session
-    mock_input = mocker.patch("builtins.input", return_value="mocked input")
+    mocker.patch("builtins.input", return_value="mocked input")
     mock_does_user_exist = mocker.patch.object(
         play_session.db, "does_user_exist", return_value=False
     )
