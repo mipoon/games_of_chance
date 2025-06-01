@@ -3,3 +3,4 @@ source = .
 omit =
     # main.py
     tests/*
+    tkinter_test.py
