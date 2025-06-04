@@ -23,7 +23,6 @@ class Player:
             rarity: (str) Rarity of the prize
         Returns: None
         """
-        # Refactored by ChatGPT
         rarity_index = ["common", "odd", "rare", "epic", "legendary"].index(rarity)
         self.prizes[rarity_index].append(prize)
         self.prizes[rarity_index].sort()

@@ -96,7 +96,6 @@ class PlaySession:
         print(50 * "-")
         print("\nPrizes earned:\n")
 
-        # ChatGPT helped fix the function, using an index counter in a loop
         index = 0
         categories = ["Common", "Odd", "Rare", "Epic", "Legendary"]
         for row in self.player.prizes:

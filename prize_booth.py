@@ -95,7 +95,6 @@ class PrizeBooth:
         add_percent = tokens // 3
         extra = tokens % 3
 
-        # Base percentages: Refactored by ChatGPT
         common, odd, rare, epic, legendary = 35, 60, 80, 95, 100
         roll_rarity = list(range(1, 101 + add_percent))
 
@@ -194,7 +193,6 @@ class PrizeBooth:
             rarity: (str) Rarity of prize
         Returns: (int) Refunded tokens
         """
-        # 'Inspired' by ChatGPT's work on append_prizes()
         refund_amounts = [
             ["common", 3],
             ["odd", 5],

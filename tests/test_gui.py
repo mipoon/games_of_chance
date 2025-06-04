@@ -1,4 +1,8 @@
-import unittest
+"""
+Comprehensive tests for gui.py module using pytest framework.
+Converted from unittest and expanded for better coverage.
+"""
+import pytest
 from unittest.mock import Mock, patch, MagicMock
 import tkinter as tk
 import queue
@@ -8,86 +12,151 @@ from gui import GameGUI, GUIPlaySession, GUIGameWrapper, GUIPrizeBooth, run_gui
 from player import Player
 
 
-class TestGameGUI(unittest.TestCase):
-    def setUp(self):
-        self.root = tk.Tk()
-        self.root.withdraw()  # Hide the window during testing
-        
-    def tearDown(self):
-        if self.root:
-            self.root.destroy()
+class TestGameGUI:
+    """Test the main GameGUI class"""
+    
+    @pytest.fixture
+    def root(self):
+        """Create a tkinter root for testing"""
+        root = tk.Tk()
+        root.withdraw()  # Hide the window during testing
+        yield root
+        if root:
+            root.destroy()
             
-    def test_game_gui_init(self):
-        """Test GameGUI initialization"""
-        gui = GameGUI(self.root, auto_start=False)
+    @pytest.fixture
+    def gui(self, root):
+        """Create a GameGUI instance for testing"""
+        return GameGUI(root, auto_start=False)
         
+    def test_game_gui_init(self, gui):
+        """Test GameGUI initialization"""
         # Check that UI components are created
-        self.assertIsNotNone(gui.info_frame)
-        self.assertIsNotNone(gui.conversation_frame)
-        self.assertIsNotNone(gui.input_frame)
-        self.assertIsNotNone(gui.name_label)
-        self.assertIsNotNone(gui.tokens_label)
-        self.assertIsNotNone(gui.prizes_label)
-        self.assertIsNotNone(gui.conversation_text)
-        self.assertIsNotNone(gui.input_entry)
-        self.assertIsNotNone(gui.send_button)
-        self.assertIsNotNone(gui.end_game_button)
+        assert gui.info_frame is not None
+        assert gui.conversation_frame is not None
+        assert gui.input_frame is not None
+        assert gui.name_label is not None
+        assert gui.tokens_label is not None
+        assert gui.prizes_label is not None
+        assert gui.conversation_text is not None
+        assert gui.input_entry is not None
+        assert gui.send_button is not None
+        assert gui.end_game_button is not None
         
         # Check initial state
-        self.assertFalse(gui.waiting_for_input)
-        self.assertFalse(gui.game_running)  # Should be False when auto_start=False
+        assert gui.waiting_for_input is False
+        assert gui.game_running is False  # Should be False when auto_start=False
         
-    def test_add_to_conversation(self):
+    def test_game_gui_init_with_auto_start(self, root):
+        """Test GameGUI initialization with auto_start=True"""
+        with patch.object(GameGUI, 'start_game') as mock_start:
+            gui = GameGUI(root, auto_start=True)
+            mock_start.assert_called_once()
+            
+    def test_add_to_conversation(self, gui):
         """Test adding text to conversation area"""
-        gui = GameGUI(self.root, auto_start=False)
         test_text = "Test message"
         
         gui.add_to_conversation(test_text)
         
         # Get the text from the conversation widget
         content = gui.conversation_text.get("1.0", tk.END)
-        self.assertIn(test_text, content)
+        assert test_text in content
         
-    def test_update_player_info(self):
+    def test_update_player_info(self, gui):
         """Test updating player information display"""
-        gui = GameGUI(self.root, auto_start=False)
-        
         gui.update_player_info("TestPlayer|100|5")
         
-        self.assertEqual(gui.name_label.cget("text"), "Player: TestPlayer")
-        self.assertEqual(gui.tokens_label.cget("text"), "Tokens: 100")
-        self.assertEqual(gui.prizes_label.cget("text"), "Prizes: 5")
+        assert gui.name_label.cget("text") == "Player: TestPlayer"
+        assert gui.tokens_label.cget("text") == "Tokens: 100"
+        assert gui.prizes_label.cget("text") == "Prizes: 5"
         
-    def test_send_input_when_waiting(self):
+    def test_update_player_info_insufficient_parts(self, gui):
+        """Test updating player info with insufficient data"""
+        # Should not crash with insufficient parts
+        gui.update_player_info("TestPlayer|100")
+        # Labels should remain unchanged from default
+        assert "Player: Not logged in" in gui.name_label.cget("text")
+        
+    def test_send_input_when_waiting(self, gui):
         """Test sending input when waiting for input"""
-        gui = GameGUI(self.root, auto_start=False)
         gui.waiting_for_input = True
         gui.input_entry.insert(0, "test input")
         
         gui.send_input()
         
         # Check that input was queued
-        self.assertFalse(gui.input_queue.empty())
+        assert not gui.input_queue.empty()
         input_value = gui.input_queue.get()
-        self.assertEqual(input_value, "test input")
+        assert input_value == "test input"
         
         # Check that entry was cleared
-        self.assertEqual(gui.input_entry.get(), "")
+        assert gui.input_entry.get() == ""
         
-    def test_send_input_when_not_waiting(self):
+    def test_send_input_when_not_waiting(self, gui):
         """Test sending input when not waiting for input"""
-        gui = GameGUI(self.root, auto_start=False)
         gui.waiting_for_input = False
         gui.input_entry.insert(0, "test input")
         
         gui.send_input()
         
         # Check that input was not queued
-        self.assertTrue(gui.input_queue.empty())
+        assert gui.input_queue.empty()
         
-    def test_on_closing(self):
+    def test_send_input_with_event(self, gui):
+        """Test send_input with event parameter (Enter key)"""
+        gui.waiting_for_input = True
+        gui.input_entry.insert(0, "test input")
+        
+        # Simulate Enter key event
+        event = Mock()
+        gui.send_input(event)
+        
+        assert not gui.input_queue.empty()
+        
+    def test_start_game(self, gui):
+        """Test starting the game"""
+        with patch('threading.Thread') as mock_thread:
+            mock_thread_instance = Mock()
+            mock_thread.return_value = mock_thread_instance
+            
+            gui.start_game()
+            
+            assert gui.game_running is True
+            mock_thread.assert_called_once()
+            mock_thread_instance.start.assert_called_once()
+            
+    def test_start_game_already_running(self, gui):
+        """Test starting game when already running"""
+        gui.game_running = True
+        
+        with patch('threading.Thread') as mock_thread:
+            gui.start_game()
+            mock_thread.assert_not_called()
+            
+    def test_end_game(self, gui):
+        """Test ending the game"""
+        gui.game_running = True
+        gui.on_closing = Mock()
+        
+        gui.end_game()
+        
+        assert not gui.input_queue.empty()
+        assert gui.input_queue.get() == "exit"
+        assert gui.game_running is False
+        gui.on_closing.assert_called_once()
+        
+    def test_end_game_not_running(self, gui):
+        """Test ending game when not running"""
+        gui.game_running = False
+        gui.on_closing = Mock()
+        
+        gui.end_game()
+        
+        gui.on_closing.assert_called_once()
+        
+    def test_on_closing(self, gui):
         """Test window closing behavior"""
-        gui = GameGUI(self.root, auto_start=False)
         gui.game_running = True
         
         # Mock the root methods to prevent actual closing during test
@@ -96,42 +165,140 @@ class TestGameGUI(unittest.TestCase):
         
         gui.on_closing()
         
-        self.assertFalse(gui.game_running)
+        assert gui.game_running is False
         gui.root.quit.assert_called_once()
         gui.root.destroy.assert_called_once()
-
-
-class TestGUIPlaySession(unittest.TestCase):
-    def setUp(self):
-        self.input_queue = queue.Queue()
-        self.output_queue = queue.Queue()
         
-    def test_gui_play_session_init(self):
+    def test_check_output_queue_game_ended(self, gui):
+        """Test check_output_queue when game ends"""
+        gui.output_queue.put("GAME_ENDED")
+        gui.game_running = True
+        gui.add_to_conversation = Mock()
+        
+        gui.check_output_queue()
+        
+        assert gui.game_running is False
+        gui.add_to_conversation.assert_called_with("Game ended. You can close the window.\n")
+        
+    def test_check_output_queue_waiting_for_input(self, gui):
+        """Test check_output_queue when waiting for input"""
+        gui.output_queue.put("WAITING_FOR_INPUT")
+        gui.input_entry.config(state=tk.DISABLED)
+        gui.send_button.config(state=tk.DISABLED)
+        
+        gui.check_output_queue()
+        
+        assert gui.waiting_for_input is True
+        assert str(gui.input_entry.cget("state")) == "normal"
+        assert str(gui.send_button.cget("state")) == "normal"
+        
+    def test_check_output_queue_input_received(self, gui):
+        """Test check_output_queue when input is received"""
+        gui.output_queue.put("INPUT_RECEIVED")
+        gui.waiting_for_input = True
+        
+        gui.check_output_queue()
+        
+        assert gui.waiting_for_input is False
+        assert str(gui.input_entry.cget("state")) == "disabled"
+        assert str(gui.send_button.cget("state")) == "disabled"
+        
+    def test_check_output_queue_update_player_info(self, gui):
+        """Test check_output_queue with player info update"""
+        gui.output_queue.put("UPDATE_PLAYER_INFO:TestPlayer|100|5")
+        gui.update_player_info = Mock()
+        
+        gui.check_output_queue()
+        
+        gui.update_player_info.assert_called_with("TestPlayer|100|5")
+        
+    def test_check_output_queue_regular_message(self, gui):
+        """Test check_output_queue with regular message"""
+        gui.output_queue.put("Regular message")
+        gui.add_to_conversation = Mock()
+        
+        gui.check_output_queue()
+        
+        gui.add_to_conversation.assert_called_with("Regular message")
+        
+    def test_check_output_queue_empty(self, gui):
+        """Test check_output_queue when queue is empty"""
+        gui.game_running = True
+        gui.root.after = Mock()
+        
+        gui.check_output_queue()
+        
+        gui.root.after.assert_called_with(100, gui.check_output_queue)
+        
+    def test_run_game_session_success(self, gui):
+        """Test successful game session run"""
+        with patch('gui.GUIPlaySession') as mock_session_class:
+            mock_session = Mock()
+            mock_session_class.return_value = mock_session
+            
+            gui.run_game_session()
+            
+            mock_session_class.assert_called_once_with(gui.input_queue, gui.output_queue)
+            mock_session.run_session.assert_called_once()
+            assert not gui.output_queue.empty()
+            assert gui.output_queue.get() == "GAME_ENDED"
+            
+    def test_run_game_session_exception(self, gui):
+        """Test game session run with exception"""
+        with patch('gui.GUIPlaySession') as mock_session_class:
+            mock_session = Mock()
+            mock_session.run_session.side_effect = Exception("Test error")
+            mock_session_class.return_value = mock_session
+            
+            gui.run_game_session()
+            
+            # Should have error message and GAME_ENDED
+            messages = []
+            while not gui.output_queue.empty():
+                messages.append(gui.output_queue.get())
+            
+            assert any("Error: Test error" in msg for msg in messages)
+            assert "GAME_ENDED" in messages
+
+
+class TestGUIPlaySession:
+    """Test the GUIPlaySession class"""
+    
+    @pytest.fixture
+    def session(self):
+        """Create a GUIPlaySession for testing"""
+        input_queue = queue.Queue()
+        output_queue = queue.Queue()
+        return GUIPlaySession(input_queue, output_queue)
+        
+    def test_gui_play_session_init(self, session):
         """Test GUIPlaySession initialization"""
-        session = GUIPlaySession(self.input_queue, self.output_queue)
+        assert session.input_queue is not None
+        assert session.output_queue is not None
+        assert session.db is not None
+        assert session.player is not None
+        assert session.prize_booth is not None
         
-        self.assertEqual(session.input_queue, self.input_queue)
-        self.assertEqual(session.output_queue, self.output_queue)
-        self.assertIsNotNone(session.db)
-        self.assertIsNotNone(session.player)
-        self.assertIsNotNone(session.prize_booth)
-        
-    def test_gui_print(self):
+    def test_gui_print(self, session):
         """Test GUI print functionality"""
-        session = GUIPlaySession(self.input_queue, self.output_queue)
-        
         session.gui_print("Test message")
         
-        self.assertFalse(self.output_queue.empty())
-        message = self.output_queue.get()
-        self.assertEqual(message, "Test message\n")
+        assert not session.output_queue.empty()
+        message = session.output_queue.get()
+        assert message == "Test message\n"
         
-    def test_gui_input(self):
+    def test_gui_print_with_number(self, session):
+        """Test GUI print with number"""
+        session.gui_print(42)
+        
+        assert not session.output_queue.empty()
+        message = session.output_queue.get()
+        assert message == "42\n"
+        
+    def test_gui_input(self, session):
         """Test GUI input functionality"""
-        session = GUIPlaySession(self.input_queue, self.output_queue)
-        
         # Put input in queue
-        self.input_queue.put("test input")
+        session.input_queue.put("test input")
         
         # Start input in a thread to avoid blocking
         result = []
@@ -142,74 +309,187 @@ class TestGUIPlaySession(unittest.TestCase):
         thread.start()
         thread.join(timeout=1)
         
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0], "test input")
+        assert len(result) == 1
+        assert result[0] == "test input"
         
         # Check that prompt and signals were sent
         messages = []
-        while not self.output_queue.empty():
-            messages.append(self.output_queue.get())
+        while not session.output_queue.empty():
+            messages.append(session.output_queue.get())
             
-        self.assertIn("Enter something: \n", messages)
-        self.assertIn("WAITING_FOR_INPUT", messages)
-        self.assertIn("INPUT_RECEIVED", messages)
+        assert "Enter something: \n" in messages
+        assert "WAITING_FOR_INPUT" in messages
+        assert "INPUT_RECEIVED" in messages
         
-    def test_update_player_display(self):
+    def test_update_player_display(self, session):
         """Test player display update"""
-        session = GUIPlaySession(self.input_queue, self.output_queue)
         session.player.name = "TestPlayer"
         session.player.tokens = 100
         session.player.prizes = [["Cat"], ["Bird"], [], [], []]
         
         session.update_player_display()
         
-        self.assertFalse(self.output_queue.empty())
-        message = self.output_queue.get()
-        self.assertEqual(message, "UPDATE_PLAYER_INFO:TestPlayer|100|2")
+        assert not session.output_queue.empty()
+        message = session.output_queue.get()
+        assert message == "UPDATE_PLAYER_INFO:TestPlayer|100|2"
+        
+    def test_update_player_display_empty_prizes(self, session):
+        """Test player display update with empty prizes"""
+        session.player.name = "TestPlayer"
+        session.player.tokens = 50
+        session.player.prizes = [[], [], [], [], []]
+        
+        session.update_player_display()
+        
+        message = session.output_queue.get()
+        assert message == "UPDATE_PLAYER_INFO:TestPlayer|50|0"
+        
+    def test_display_instructions(self, session):
+        """Test display instructions"""
+        session.display_instructions()
+        
+        messages = []
+        while not session.output_queue.empty():
+            messages.append(session.output_queue.get())
+            
+        # Check that welcome message is included
+        assert any("Welcome to Games of Chance with Prizes!" in msg for msg in messages)
+        assert any("mini-games" in msg for msg in messages)
         
     @patch('gui.GUIPlaySession.gui_input')
     @patch('gui.GUIPlaySession.gui_print')
-    @patch('db.Database')
-    def test_setup_player_new(self, mock_db_class, mock_print, mock_input):
+    @patch('gui.GUIPlaySession.update_player_display')
+    def test_setup_player_new(self, mock_update, mock_print, mock_input):
         """Test setting up a new player"""
-        mock_db = Mock()
-        mock_db.does_user_exist.return_value = False
-        mock_db_class.return_value = mock_db
-        mock_input.return_value = "NewPlayer"
+        input_queue = queue.Queue()
+        output_queue = queue.Queue()
+        session = GUIPlaySession(input_queue, output_queue)
         
-        session = GUIPlaySession(self.input_queue, self.output_queue)
-        session.db = mock_db  # Manually set the mock
-        session.setup_player()
-        
-        self.assertEqual(session.player.name, "NewPlayer")
-        self.assertEqual(session.player.tokens, 30)
-        self.assertEqual(session.player.prizes, [[], [], [], [], []])
-        mock_db.add_user_data.assert_called_once_with("NewPlayer")
-        
+        with patch.object(session.db, 'does_user_exist', return_value=False), \
+             patch.object(session.db, 'add_user_data') as mock_add:
+            
+            mock_input.return_value = "NewPlayer"
+            
+            session.setup_player()
+            
+            assert session.player.name == "NewPlayer"
+            assert session.player.tokens == 30
+            assert session.player.prizes == [[], [], [], [], []]
+            mock_add.assert_called_once_with("NewPlayer")
+            mock_update.assert_called_once()
+            
     @patch('gui.GUIPlaySession.gui_input')
     @patch('gui.GUIPlaySession.gui_print')
-    @patch('db.Database')
-    def test_setup_player_existing(self, mock_db_class, mock_print, mock_input):
+    @patch('gui.GUIPlaySession.update_player_display')
+    def test_setup_player_existing(self, mock_update, mock_print, mock_input):
         """Test setting up an existing player"""
-        mock_db = Mock()
-        mock_db.does_user_exist.return_value = True
-        mock_db.get_user_data.return_value = {
-            "tokens": 50,
-            "prizes": [["Cat"], [], [], [], []]
-        }
-        mock_db_class.return_value = mock_db
-        mock_input.return_value = "ExistingPlayer"
+        input_queue = queue.Queue()
+        output_queue = queue.Queue()
+        session = GUIPlaySession(input_queue, output_queue)
         
-        session = GUIPlaySession(self.input_queue, self.output_queue)
-        session.db = mock_db  # Manually set the mock
-        session.setup_player()
+        with patch.object(session.db, 'does_user_exist', return_value=True), \
+             patch.object(session.db, 'get_user_data', return_value={
+                 "tokens": 50,
+                 "prizes": [["Cat"], [], [], [], []]
+             }):
+            
+            mock_input.return_value = "ExistingPlayer"
+            
+            session.setup_player()
+            
+            assert session.player.name == "ExistingPlayer"
+            assert session.player.tokens == 50
+            assert session.player.prizes == [["Cat"], [], [], [], []]
+            mock_update.assert_called_once()
+            
+    @patch('gui.GUIGameWrapper')
+    @patch('games.game_loader.GameLoader.pick_random_game')
+    @patch('gui.GUIPlaySession.update_player_display')
+    @patch('time.sleep')
+    def test_play_games(self, mock_sleep, mock_update, mock_pick_game, mock_wrapper_class):
+        """Test playing games"""
+        input_queue = queue.Queue()
+        output_queue = queue.Queue()
+        session = GUIPlaySession(input_queue, output_queue)
         
-        self.assertEqual(session.player.name, "ExistingPlayer")
-        self.assertEqual(session.player.tokens, 50)
-        self.assertEqual(session.player.prizes, [["Cat"], [], [], [], []])
+        # Mock game and wrapper
+        mock_game = Mock()
+        mock_pick_game.return_value = mock_game
+        mock_wrapper = Mock()
+        mock_wrapper.play.return_value = 20
+        mock_wrapper_class.return_value = mock_wrapper
+        
+        session.player.tokens = 30
+        
+        session.play_games()
+        
+        # Should have played 3 games
+        assert mock_wrapper_class.call_count == 3
+        assert mock_wrapper.play.call_count == 3
+        assert mock_update.call_count == 3
+        
+        # Should have earned 60 tokens (20 * 3)
+        assert session.player.tokens == 90
+        
+    def test_final_results(self, session):
+        """Test final results display"""
+        session.player.prizes = [["Cat", "Dog"], ["Bird"], [], ["Butterfly"], []]
+        
+        session.final_results()
+        
+        messages = []
+        while not session.output_queue.empty():
+            messages.append(session.output_queue.get())
+            
+        # Check for category displays
+        assert any("Common - Cat, Dog" in msg for msg in messages)
+        assert any("Odd - Bird" in msg for msg in messages)
+        assert any("Rare - None" in msg for msg in messages)
+        assert any("Epic - Butterfly" in msg for msg in messages)
+        assert any("Legendary - None" in msg for msg in messages)
+        
+    @patch('gui.GUIPlaySession.gui_print')
+    def test_conclude(self, mock_print, session):
+        """Test conclude method"""
+        with patch.object(session.db, 'update_user_data') as mock_update:
+            session.conclude()
+            
+            mock_update.assert_called_once_with(session.player)
+            mock_print.assert_called_with("\nThanks for playing!\n")
+            
+    @patch('gui.GUIPlaySession.setup_player')
+    @patch('gui.GUIPlaySession.display_instructions')
+    @patch('gui.GUIPlaySession.play_games')
+    @patch('gui.GUIPlaySession.prize_booth_interaction')
+    @patch('gui.GUIPlaySession.final_results')
+    @patch('gui.GUIPlaySession.conclude')
+    def test_run_session(self, mock_conclude, mock_final, mock_prize, 
+                        mock_play, mock_instructions, mock_setup, session):
+        """Test complete run session"""
+        session.run_session()
+        
+        mock_setup.assert_called_once()
+        mock_instructions.assert_called_once()
+        mock_play.assert_called_once()
+        mock_prize.assert_called_once()
+        mock_final.assert_called_once()
+        mock_conclude.assert_called_once()
+        
+    @patch('gui.GUIPrizeBooth')
+    def test_prize_booth_interaction(self, mock_booth_class, session):
+        """Test prize booth interaction"""
+        mock_booth = Mock()
+        mock_booth_class.return_value = mock_booth
+        
+        session.prize_booth_interaction()
+        
+        mock_booth_class.assert_called_once()
+        mock_booth.spend_tokens.assert_called_once()
 
 
-class TestGUIGameWrapper(unittest.TestCase):
+class TestGUIGameWrapper:
+    """Test the GUIGameWrapper class"""
+    
     def test_gui_game_wrapper_init(self):
         """Test GUIGameWrapper initialization"""
         mock_game = Mock()
@@ -218,9 +498,9 @@ class TestGUIGameWrapper(unittest.TestCase):
         
         wrapper = GUIGameWrapper(mock_game, mock_input, mock_output)
         
-        self.assertEqual(wrapper.game, mock_game)
-        self.assertEqual(wrapper.gui_input, mock_input)
-        self.assertEqual(wrapper.gui_print, mock_output)
+        assert wrapper.game == mock_game
+        assert wrapper.gui_input == mock_input
+        assert wrapper.gui_print == mock_output
         
     @patch('builtins.input')
     @patch('builtins.print')
@@ -234,115 +514,322 @@ class TestGUIGameWrapper(unittest.TestCase):
         wrapper = GUIGameWrapper(mock_game, mock_gui_input, mock_gui_output)
         result = wrapper.play()
         
-        self.assertEqual(result, 50)
+        assert result == 50
         mock_game.play.assert_called_once()
-
-
-class TestGUIPrizeBooth(unittest.TestCase):
-    def setUp(self):
-        self.player = Player()
-        self.player.name = "TestPlayer"
-        self.player.tokens = 100
-        self.player.prizes = [[], [], [], [], []]
-        self.mock_input = Mock()
-        self.mock_output = Mock()
-        self.mock_update = Mock()
         
-    def test_gui_prize_booth_init(self):
+    @patch('builtins.input')
+    @patch('builtins.print')
+    def test_play_restores_original_functions(self, mock_print, mock_input):
+        """Test that original functions are restored after play"""
+        original_input = mock_input
+        original_print = mock_print
+        
+        mock_game = Mock()
+        mock_game.play.return_value = 25
+        mock_gui_input = Mock()
+        mock_gui_output = Mock()
+        
+        wrapper = GUIGameWrapper(mock_game, mock_gui_input, mock_gui_output)
+        wrapper.play()
+        
+        # Check that builtins were restored
+        import builtins
+        assert builtins.input == original_input
+        assert builtins.print == original_print
+        
+    @patch('builtins.input')
+    @patch('builtins.print')
+    def test_play_with_exception(self, mock_print, mock_input):
+        """Test that original functions are restored even when exception occurs"""
+        original_input = mock_input
+        original_print = mock_print
+        
+        mock_game = Mock()
+        mock_game.play.side_effect = Exception("Game error")
+        mock_gui_input = Mock()
+        mock_gui_output = Mock()
+        
+        wrapper = GUIGameWrapper(mock_game, mock_gui_input, mock_gui_output)
+        
+        with pytest.raises(Exception, match="Game error"):
+            wrapper.play()
+            
+        # Check that builtins were restored despite exception
+        import builtins
+        assert builtins.input == original_input
+        assert builtins.print == original_print
+
+
+class TestGUIPrizeBooth:
+    """Test the GUIPrizeBooth class"""
+    
+    @pytest.fixture
+    def player(self):
+        """Create a test player"""
+        player = Player()
+        player.name = "TestPlayer"
+        player.tokens = 100
+        player.prizes = [[], [], [], [], []]
+        return player
+        
+    @pytest.fixture
+    def booth(self, player):
+        """Create a GUIPrizeBooth for testing"""
+        mock_input = Mock()
+        mock_output = Mock()
+        mock_update = Mock()
+        return GUIPrizeBooth(player, mock_input, mock_output, mock_update)
+        
+    def test_gui_prize_booth_init(self, booth, player):
         """Test GUIPrizeBooth initialization"""
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
-        
-        self.assertEqual(booth.user, self.player)
-        self.assertEqual(booth.gui_input, self.mock_input)
-        self.assertEqual(booth.gui_print, self.mock_output)
-        self.assertEqual(booth.update_display, self.mock_update)
+        assert booth.user == player
+        assert booth.gui_input is not None
+        assert booth.gui_print is not None
+        assert booth.update_display is not None
         
     @patch('random.choice')
-    def test_spend_for_rarity_common(self, mock_choice):
+    def test_spend_for_rarity_common(self, mock_choice, booth):
         """Test spending for common rarity"""
         mock_choice.return_value = 30
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
         
         rarity, extra = booth.spend_for_rarity("common", 10)
         
-        self.assertEqual(rarity, "common")
-        self.assertEqual(extra, 1)  # 10 % 3 = 1
+        assert rarity == "common"
+        assert extra == 1  # 10 % 3 = 1
         
     @patch('random.choice')
-    def test_spend_for_rarity_legendary(self, mock_choice):
+    def test_spend_for_rarity_legendary(self, mock_choice, booth):
         """Test spending for legendary rarity"""
         mock_choice.return_value = 110
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
         
         rarity, extra = booth.spend_for_rarity("legendary", 9)
         
-        self.assertEqual(rarity, "legendary")
-        self.assertEqual(extra, 0)  # 9 % 3 = 0
+        assert rarity == "legendary"
+        assert extra == 0  # 9 % 3 = 0
         
     @patch('random.choice')
-    def test_select_prize_common(self, mock_choice):
-        """Test selecting a common prize"""
-        mock_choice.return_value = "Cat"
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
+    def test_spend_for_rarity_none(self, mock_choice, booth):
+        """Test spending for no specific rarity"""
+        mock_choice.return_value = 50
         
-        prize = booth.select_prize("common")
+        rarity, extra = booth.spend_for_rarity("none", 6)
         
-        self.assertEqual(prize, "Cat")
+        assert rarity == "odd"  # 50 falls in odd range
+        assert extra == 0  # 6 % 3 = 0
         
     @patch('random.choice')
-    def test_select_prize_legendary(self, mock_choice):
-        """Test selecting a legendary prize"""
-        mock_choice.return_value = "Elephant"
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
+    def test_spend_for_rarity_all_categories(self, mock_choice, booth):
+        """Test all rarity categories"""
+        test_cases = [
+            (20, "common"),
+            (50, "odd"),
+            (70, "rare"),
+            (90, "epic"),
+            (110, "legendary")
+        ]
         
-        prize = booth.select_prize("legendary")
+        for roll, expected_rarity in test_cases:
+            mock_choice.return_value = roll
+            rarity, _ = booth.spend_for_rarity("none", 0)
+            assert rarity == expected_rarity
+            
+    @patch('random.choice')
+    def test_select_prize_all_rarities(self, mock_choice, booth):
+        """Test selecting prizes for all rarities"""
+        test_cases = [
+            ("common", "Cat"),
+            ("odd", "Bird"),
+            ("rare", "Ferret"),
+            ("epic", "Butterfly"),
+            ("legendary", "Elephant")
+        ]
         
-        self.assertEqual(prize, "Elephant")
-        
-    def test_select_prize_invalid_rarity(self):
+        for rarity, expected_prize in test_cases:
+            mock_choice.return_value = expected_prize
+            prize = booth.select_prize(rarity)
+            assert prize == expected_prize
+            
+    def test_select_prize_invalid_rarity(self, booth):
         """Test selecting prize with invalid rarity"""
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
-        
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError, match="Invalid prize rarity"):
             booth.select_prize("invalid")
             
-    def test_refund_rerolls_existing_prize(self):
+    def test_refund_rerolls_existing_prize(self, booth, player):
         """Test refund for existing prize"""
-        self.player.prizes[0] = ["Cat"]  # Common prize
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
+        player.prizes[0] = ["Cat"]  # Common prize
         
         refund = booth.refund_rerolls("Cat", "common")
         
-        self.assertEqual(refund, 3)
+        assert refund == 3
         
-    def test_refund_rerolls_new_prize(self):
+    def test_refund_rerolls_new_prize(self, booth):
         """Test no refund for new prize"""
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
-        
         refund = booth.refund_rerolls("Dog", "common")
         
-        self.assertEqual(refund, 0)
+        assert refund == 0
         
-    def test_refund_rerolls_all_rarities(self):
+    def test_refund_rerolls_all_rarities(self, booth, player):
         """Test refund amounts for all rarities"""
-        booth = GUIPrizeBooth(self.player, self.mock_input, self.mock_output, self.mock_update)
-        
         # Set up existing prizes
-        self.player.prizes[0] = ["Cat"]      # Common
-        self.player.prizes[1] = ["Bird"]     # Odd
-        self.player.prizes[2] = ["Ferret"]   # Rare
-        self.player.prizes[3] = ["Butterfly"] # Epic
-        self.player.prizes[4] = ["Elephant"] # Legendary
+        player.prizes[0] = ["Cat"]      # Common
+        player.prizes[1] = ["Bird"]     # Odd
+        player.prizes[2] = ["Ferret"]   # Rare
+        player.prizes[3] = ["Butterfly"] # Epic
+        player.prizes[4] = ["Elephant"] # Legendary
         
         # Test refunds
-        self.assertEqual(booth.refund_rerolls("Cat", "common"), 3)
-        self.assertEqual(booth.refund_rerolls("Bird", "odd"), 5)
-        self.assertEqual(booth.refund_rerolls("Ferret", "rare"), 7)
-        self.assertEqual(booth.refund_rerolls("Butterfly", "epic"), 10)
-        self.assertEqual(booth.refund_rerolls("Elephant", "legendary"), 20)
+        assert booth.refund_rerolls("Cat", "common") == 3
+        assert booth.refund_rerolls("Bird", "odd") == 5
+        assert booth.refund_rerolls("Ferret", "rare") == 7
+        assert booth.refund_rerolls("Butterfly", "epic") == 10
+        assert booth.refund_rerolls("Elephant", "legendary") == 20
+        
+    @patch('time.sleep')
+    @patch('random.choice')
+    def test_spend_tokens_single_round(self, mock_choice, mock_sleep, booth, player):
+        """Test spending tokens for one round"""
+        player.tokens = 50
+        
+        # Mock user inputs
+        booth.gui_input.side_effect = ["10", "common", "exit"]
+        
+        # Mock random choices
+        mock_choice.side_effect = [30, "Cat"]  # rarity roll, prize selection
+        
+        booth.spend_tokens()
+        
+        # Should have spent 10 + 20 = 30 tokens, gained 1 back (10 % 3)
+        assert player.tokens == 21  # 50 - 10 - 20 + 1
+        
+    @patch('time.sleep')
+    @patch('random.choice')
+    def test_spend_tokens_insufficient_tokens(self, mock_choice, mock_sleep, booth, player):
+        """Test spending tokens when insufficient tokens"""
+        player.tokens = 15  # Less than 20 required
+        
+        booth.spend_tokens()
+        
+        # Should not enter the spending loop
+        booth.gui_input.assert_not_called()
+        
+    @patch('time.sleep')
+    @patch('random.choice')
+    def test_spend_tokens_negative_amount(self, mock_choice, mock_sleep, booth, player):
+        """Test spending negative amount of tokens"""
+        player.tokens = 50
+        
+        # Mock user inputs: negative amount, then valid amount, then exit
+        booth.gui_input.side_effect = ["-5", "5", "common", "exit"]
+        
+        # Mock random choices
+        mock_choice.side_effect = [30, "Cat"]
+        
+        booth.spend_tokens()
+        
+        # Should have called gui_print with error message
+        booth.gui_print.assert_any_call("You cannot spend a negative amount of tokens.")
+        
+    @patch('time.sleep')
+    @patch('random.choice')
+    def test_spend_tokens_invalid_rarity(self, mock_choice, mock_sleep, booth, player):
+        """Test spending tokens with invalid rarity"""
+        player.tokens = 50
+        
+        # Mock user inputs: valid amount, invalid rarity, valid rarity, exit
+        booth.gui_input.side_effect = ["10", "invalid", "10", "common", "exit"]
+        
+        # Mock random choices
+        mock_choice.side_effect = [30, "Cat"]
+        
+        booth.spend_tokens()
+        
+        # Should have called gui_print with error message
+        booth.gui_print.assert_any_call("\nYou must enter a valid rarity\n")
+        
+    @patch('time.sleep')
+    @patch('random.choice')
+    def test_spend_tokens_invalid_number(self, mock_choice, mock_sleep, booth, player):
+        """Test spending tokens with invalid number input"""
+        player.tokens = 50
+        
+        # Mock user inputs: invalid number, valid number, rarity, exit
+        booth.gui_input.side_effect = ["abc", "10", "common", "exit"]
+        
+        # Mock random choices
+        mock_choice.side_effect = [30, "Cat"]
+        
+        booth.spend_tokens()
+        
+        # Should have called gui_print with error message
+        booth.gui_print.assert_any_call("\nERROR: Enter a valid numerical value:\n")
+        
+    @patch('time.sleep')
+    @patch('random.choice')
+    def test_spend_tokens_continue_playing(self, mock_choice, mock_sleep, booth, player):
+        """Test continuing to play multiple rounds"""
+        player.tokens = 100
+        
+        # Mock user inputs for two rounds
+        booth.gui_input.side_effect = [
+            "10", "common",  # First round
+            "continue",      # Continue playing
+            "5", "rare",     # Second round
+            "exit"           # Exit
+        ]
+        
+        # Mock random choices for two rounds
+        mock_choice.side_effect = [30, "Cat", 70, "Ferret"]
+        
+        booth.spend_tokens()
+        
+        # Should have played two rounds
+        assert booth.gui_input.call_count == 6  # 2 amounts + 2 rarities + 2 continue/exit prompts
+        
+    @patch('time.sleep')
+    @patch('random.choice')
+    def test_spend_tokens_invalid_continue_response(self, mock_choice, mock_sleep, booth, player):
+        """Test invalid response to continue/exit prompt"""
+        player.tokens = 50
+        
+        # Mock user inputs: valid amount, rarity, invalid response, valid response
+        booth.gui_input.side_effect = ["10", "common", "invalid", "exit"]
+        
+        # Mock random choices
+        mock_choice.side_effect = [30, "Cat"]
+        
+        booth.spend_tokens()
+        
+        # Should have called gui_print with error message
+        booth.gui_print.assert_any_call("Invalid response\n")
+        
+
+        
+    @patch('time.sleep')
+    @patch('random.choice')
+    def test_spend_tokens_with_refund(self, mock_choice, mock_sleep, booth, player):
+        """Test spending tokens with refund for duplicate prize"""
+        player.tokens = 50
+        player.prizes[0] = ["Cat"]  # Already own this prize
+        
+        # Mock user inputs
+        booth.gui_input.side_effect = ["10", "common", "exit"]
+        
+        # Mock random choices - will get Cat which is already owned
+        mock_choice.side_effect = [30, "Cat"]
+        
+        booth.spend_tokens()
+        
+        # Should have refunded 3 tokens for duplicate common prize
+        # 50 - 10 (rarity) - 20 (prize) + 1 (extra from rarity) + 3 (refund) = 24
+        assert player.tokens == 24
+        
+        # Should have called gui_print with refund message
+        booth.gui_print.assert_any_call("You already own this prize, refunding 3 tokens")
 
 
-class TestRunGUI(unittest.TestCase):
+class TestRunGUI:
+    """Test the run_gui function"""
+    
     @patch('gui.tk.Tk')
     @patch('gui.GameGUI')
     def test_run_gui(self, mock_game_gui, mock_tk):
@@ -357,7 +844,3 @@ class TestRunGUI(unittest.TestCase):
         mock_tk.assert_called_once()
         mock_game_gui.assert_called_once_with(mock_root)
         mock_root.mainloop.assert_called_once()
-
-
-if __name__ == '__main__':
-    unittest.main()

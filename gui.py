@@ -272,6 +272,21 @@ class GUIGameWrapper:
         self.gui_input = input_func
         self.gui_print = output_func
         
+    def gui_print_wrapper(self, *args, **kwargs):
+        """Wrapper for print that handles multiple arguments"""
+        # Convert all arguments to strings and join them
+        text_parts = []
+        for arg in args:
+            text_parts.append(str(arg))
+        
+        # Handle separator and end parameters
+        sep = kwargs.get('sep', ' ')
+        end = kwargs.get('end', '\n')
+        
+        # Join the parts with separator and add end
+        text = sep.join(text_parts) + end
+        self.gui_print(text)
+        
     def play(self):
         """Play the game with GUI I/O"""
         # Monkey patch the game's input/output
@@ -280,7 +295,7 @@ class GUIGameWrapper:
         original_print = builtins.print
         
         builtins.input = self.gui_input
-        builtins.print = self.gui_print
+        builtins.print = self.gui_print_wrapper
         
         try:
             result = self.game.play()
