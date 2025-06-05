@@ -1,12 +1,13 @@
-.PHONY: lint install cover
+.PHONY: install lint cover
 
 # Install dependencies
 install:
 	pip install -r requirements.txt
 
 # Run pylint on all Python files
+PYTHON_FILES := $(shell find . -name "*.py" -not -path "./.venv/*")
 lint:
-	pylint $$(git ls-files '*.py') || true
+	pylint $(PYTHON_FILES)
 
 # Run Pytest and display coverage report
 cover:

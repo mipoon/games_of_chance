@@ -1,3 +1,12 @@
+[MASTER]
+# Files or directories matching the regex patterns are skipped. The regex matches against paths.
+# Use this to exclude .venv, build artifacts, etc.
+ignore-paths=
+    ^.*\.venv/.*$
+    ^.*dist/.*$
+    ^.*build/.*$
+    ^.*docs/.*$
+
 [MESSAGES CONTROL]
 # Disable some of the more strict warnings
 disable=
@@ -9,7 +18,8 @@ disable=
     too-many-statements,
     too-few-public-methods,
     no-member,
-    line-too-long
+    line-too-long,
+    fixme
 
 [FORMAT]
 # Set the maximum line length to a more lenient value
