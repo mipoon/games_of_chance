@@ -3,8 +3,8 @@ import pytest
 
 # pylint: disable=redefined-outer-name, unused-argument
 
-from prize_booth import PrizeBooth
-from player import Player
+from src.prize_booth import PrizeBooth
+from src.player import Player
 
 
 @pytest.fixture()
@@ -189,7 +189,7 @@ def test_spend_for_rarity_common():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value=30):  # Should be common
+    with patch('src.prize_booth.choice', return_value=30):  # Should be common
         rarity, extra = prize_booth.spend_for_rarity("common", 10)
 
     assert rarity == "common"
@@ -201,7 +201,7 @@ def test_spend_for_rarity_odd():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value=50):  # Should be odd
+    with patch('src.prize_booth.choice', return_value=50):  # Should be odd
         rarity, extra = prize_booth.spend_for_rarity("odd", 9)
 
     assert rarity == "odd"
@@ -213,7 +213,7 @@ def test_spend_for_rarity_rare():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value=70):  # Should be rare
+    with patch('src.prize_booth.choice', return_value=70):  # Should be rare
         rarity, extra = prize_booth.spend_for_rarity("rare", 12)
 
     assert rarity == "rare"
@@ -225,7 +225,7 @@ def test_spend_for_rarity_epic():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value=90):  # Should be epic
+    with patch('src.prize_booth.choice', return_value=90):  # Should be epic
         rarity, extra = prize_booth.spend_for_rarity("epic", 15)
 
     assert rarity == "epic"
@@ -237,7 +237,7 @@ def test_spend_for_rarity_legendary():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value=99):  # Should be legendary
+    with patch('src.prize_booth.choice', return_value=99):  # Should be legendary
         rarity, extra = prize_booth.spend_for_rarity("legendary", 18)
 
     assert rarity == "legendary"
@@ -249,7 +249,7 @@ def test_spend_for_rarity_none():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value=50):  # Should be odd with base percentages
+    with patch('src.prize_booth.choice', return_value=50):  # Should be odd with base percentages
         rarity, extra = prize_booth.spend_for_rarity("none", 6)
 
     assert rarity == "odd"
@@ -261,7 +261,7 @@ def test_select_prize_common():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value="Cat"):
+    with patch('src.prize_booth.choice', return_value="Cat"):
         prize = prize_booth.select_prize("common")
 
     assert prize == "Cat"
@@ -272,7 +272,7 @@ def test_select_prize_odd():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value="Bird"):
+    with patch('src.prize_booth.choice', return_value="Bird"):
         prize = prize_booth.select_prize("odd")
 
     assert prize == "Bird"
@@ -283,7 +283,7 @@ def test_select_prize_rare():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value="Owl"):
+    with patch('src.prize_booth.choice', return_value="Owl"):
         prize = prize_booth.select_prize("rare")
 
     assert prize == "Owl"
@@ -294,7 +294,7 @@ def test_select_prize_epic():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value="Duck"):
+    with patch('src.prize_booth.choice', return_value="Duck"):
         prize = prize_booth.select_prize("epic")
 
     assert prize == "Duck"
@@ -305,7 +305,7 @@ def test_select_prize_legendary():
     player = Player()
     prize_booth = PrizeBooth(player)
 
-    with patch('prize_booth.choice', return_value="Elephant"):
+    with patch('src.prize_booth.choice', return_value="Elephant"):
         prize = prize_booth.select_prize("legendary")
 
     assert prize == "Elephant"

@@ -15,11 +15,11 @@ from .player import Player
 class Database:
     """
     Database interface for managing user data and game state persistence.
-    
+
     Provides methods for user authentication, data retrieval, and updates
     using SQLAlchemy ORM with SQLite backend.
     """
-    
+
     def __init__(self) -> None:
         """Initialize database connection and ensure tables exist."""
         init_db()
@@ -27,10 +27,10 @@ class Database:
     def does_user_exist(self, username: str) -> bool:
         """
         Check if a user exists in the database.
-        
+
         Args:
             username: The username to check
-            
+
         Returns:
             bool: True if user exists, False otherwise
         """
@@ -48,10 +48,10 @@ class Database:
     def get_user_data(self, username: str) -> dict:
         """
         Retrieve user data from the database.
-        
+
         Args:
             username: The username to retrieve data for
-            
+
         Returns:
             dict: User data containing tokens and prizes, or None if not found
         """
@@ -72,18 +72,18 @@ class Database:
     def add_user_data(self, username: str) -> User:
         """
         Add a new user to the database with default starting values.
-        
+
         Args:
             username: The username for the new user
-            
+
         Returns:
             User: The created user object, or None if creation failed
         """
         session = SessionLocal()
         try:
             user = User(
-                username=username, 
-                tokens=30, 
+                username=username,
+                tokens=30,
                 prizes=[[], [], [], [], []]  # 5 prize categories
             )
             session.add(user)
@@ -101,7 +101,7 @@ class Database:
     def update_user_data(self, player: Player) -> None:
         """
         Update existing user data in the database.
-        
+
         Args:
             player: Player object containing updated data to save
         """

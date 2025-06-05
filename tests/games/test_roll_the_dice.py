@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from games.roll_the_dice import RollTheDice
+from src.games.roll_the_dice import RollTheDice
 
 
 @pytest.fixture(name="game")
@@ -9,8 +9,8 @@ def fixture_game():
 
 
 def test_play_game(capsys, game):
-    with patch("games.roll_the_dice.randint", side_effect=[1, 3]):
-        with patch("games.roll_the_dice.sleep", return_value=None):
+    with patch("src.games.roll_the_dice.randint", side_effect=[1, 3]):
+        with patch("src.games.roll_the_dice.sleep", return_value=None):
             earned_tokens = game.play()
 
             # Capture the printed output
@@ -19,7 +19,7 @@ def test_play_game(capsys, game):
                 "You don't have to do anything here, just hope you have good luck!"
                 in captured.out
             )
-            assert "You rolled a 4" in captured.out
+            assert "Total: 4" in captured.out
             assert earned_tokens == 60
 
 

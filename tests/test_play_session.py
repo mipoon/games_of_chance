@@ -1,5 +1,5 @@
 import pytest
-from play_session import PlaySession
+from src.play_session import PlaySession
 
 # pylint: disable=redefined-outer-name
 
@@ -83,10 +83,10 @@ def test_setup_new_player(mocker, fixture_play_session, capsys):
     play_session.setup_player()
     captured = capsys.readouterr()
     assert "Welcome, mocked input! Let's play some games!" in captured.out
-    assert "Set up complete. You, mocked input, currently have 30 tokens, and your prize list is: [[], [], [], []]." in captured.out
+    assert "Set up complete. You, mocked input, currently have 30 tokens, and your prize list is: [[], [], [], [], []]." in captured.out
     assert play_session.player.name == "mocked input"
     assert play_session.player.tokens == 30
-    assert play_session.player.prizes == [[], [], [], []]
+    assert play_session.player.prizes == [[], [], [], [], []]
     mock_does_user_exist.assert_called_once()
     mock_add_user_data.assert_called_once()
 
@@ -95,7 +95,7 @@ def test_play_games(capsys, mocker, fixture_play_session):
     play_session = fixture_play_session
     # Mock the pick_random_game method to return a mock game object
     mock_game = mocker.Mock()
-    mocker.patch("play_session.GameLoader.pick_random_game", return_value=mock_game)
+    mocker.patch("src.play_session.GameLoader.pick_random_game", return_value=mock_game)
 
     # Mock the play method on the mock game object to return 10 tokens each time it is called
     mock_game.play = mocker.Mock(return_value=10)
@@ -111,9 +111,9 @@ def test_final_results(capsys, fixture_play_session):
     play_session.player.prizes = [["common_prize"], ["odd_prize"], [], [], ["legendary_prize"]]
     play_session.final_results()
     captured = capsys.readouterr()
-    assert "Common -  common_prize," in captured.out
-    assert "Odd -  odd_prize," in captured.out
-    assert "Legendary -  legendary_prize," in captured.out
+    assert "Common - common_prize" in captured.out
+    assert "Odd - odd_prize" in captured.out
+    assert "Legendary - legendary_prize" in captured.out
 
 
 def test_conclude(mocker, fixture_play_session, capsys):

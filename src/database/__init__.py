@@ -10,7 +10,7 @@ from .models import Base, User
 
 __all__ = [
     'init_db',
-    'SessionLocal', 
+    'SessionLocal',
     'get_db_session',
     'close_db',
     'Base',

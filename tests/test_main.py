@@ -5,14 +5,14 @@ import main
 def test_main_function_console_default():
     """Test main function defaults to console mode"""
     with patch('builtins.input', return_value='1'), \
-         patch('play_session.PlaySession.run_session') as mock_run_session:
+         patch('src.play_session.PlaySession.run_session') as mock_run_session:
         main.main()
         mock_run_session.assert_called_once()
 
 def test_main_function_console_explicit():
     """Test main function with explicit console choice"""
     with patch('builtins.input', return_value='1'), \
-         patch('play_session.PlaySession.run_session') as mock_run_session:
+         patch('src.play_session.PlaySession.run_session') as mock_run_session:
         main.main()
         mock_run_session.assert_called_once()
 
@@ -37,14 +37,14 @@ def test_main_function_gui_argument():
 def test_main_function_empty_input():
     """Test main function with empty input (defaults to console)"""
     with patch('builtins.input', return_value=''), \
-         patch('play_session.PlaySession.run_session') as mock_run_session:
+         patch('src.play_session.PlaySession.run_session') as mock_run_session:
         main.main()
         mock_run_session.assert_called_once()
 
 def test_main_function_invalid_input():
     """Test main function with invalid input (defaults to console)"""
     with patch('builtins.input', return_value='invalid'), \
-         patch('play_session.PlaySession.run_session') as mock_run_session:
+         patch('src.play_session.PlaySession.run_session') as mock_run_session:
         main.main()
         mock_run_session.assert_called_once()
 

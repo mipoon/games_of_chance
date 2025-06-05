@@ -25,7 +25,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db() -> None:
     """
     Initialize the database by creating all tables.
-    
+
     Creates all tables defined in the models module if they don't exist.
     This function is safe to call multiple times.
     """
@@ -35,10 +35,10 @@ def init_db() -> None:
 def get_db_session():
     """
     Get a database session with automatic cleanup.
-    
+
     Returns a database session that should be used in a context manager
     or manually closed after use.
-    
+
     Returns:
         Session: SQLAlchemy database session
     """
@@ -48,7 +48,7 @@ def get_db_session():
 def close_db():
     """
     Close all database connections.
-    
+
     Useful for cleanup during application shutdown.
     """
     engine.dispose()

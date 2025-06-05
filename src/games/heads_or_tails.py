@@ -12,19 +12,19 @@ from .abstract_game import AbstractGame
 class HeadsOrTails(AbstractGame):
     """
     Coin flip guessing game.
-    
+
     Players guess the outcome of a coin flip and receive significant
     token rewards for correct guesses, with smaller consolation prizes
     for incorrect guesses.
     """
-    
+
     def _play_game(self) -> int:
         """
         Execute the heads or tails game logic.
-        
+
         Prompts the player to guess heads or tails, simulates a coin flip,
         and awards tokens based on whether the guess was correct.
-        
+
         Returns:
             int: Number of tokens earned (high for correct, low for incorrect)
         """
@@ -34,7 +34,7 @@ class HeadsOrTails(AbstractGame):
                 "Guess 'heads' or 'tails'\n"
                 "If you're correct, you'll gain a lot of tokens!: "
             ).lower().strip()
-            
+
             if user_guess in ["heads", "tails"]:
                 break
             print("Please enter 'heads' or 'tails'\n")

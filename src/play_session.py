@@ -16,11 +16,11 @@ from .helpers.clear_output import clear_output
 class PlaySession:
     """
     Manages a complete game session from player setup to conclusion.
-    
+
     Handles player authentication, game execution, prize distribution,
     and data persistence.
     """
-    
+
     def __init__(self) -> None:
         """Initialize a new play session with database, player, and prize booth."""
         self.db = Database()
@@ -30,7 +30,7 @@ class PlaySession:
     def run_session(self):
         """
         Execute a complete game session.
-        
+
         Runs through the full game flow: setup, instructions, games,
         prize booth, results display, and cleanup.
         """
@@ -72,13 +72,13 @@ class PlaySession:
     def setup_player(self):
         """
         Set up player data by loading existing player or creating new one.
-        
+
         Prompts for player name and either loads existing data from database
         or creates a new player with default starting values.
         """
         input_name = input("Please enter your name: ")
         player_exists = self.db.does_user_exist(input_name)
-        
+
         if player_exists:
             player_data = self.db.get_user_data(input_name)
             self.player.name = input_name
@@ -91,7 +91,7 @@ class PlaySession:
             self.player.tokens = 30
             self.player.prizes = [[], [], [], [], []]  # Fixed: should be 5 categories
             print(f"Welcome, {self.player.name}! Let's play some games!")
-            
+
         print(
             f"Set up complete. You, {self.player.name}, currently have "
             f"{self.player.tokens} tokens, and your prize list is: {self.player.prizes}."
@@ -100,7 +100,7 @@ class PlaySession:
     def play_games(self):
         """
         Execute the main gaming phase.
-        
+
         Runs three randomly selected mini-games and accumulates tokens
         earned by the player.
         """
@@ -131,7 +131,7 @@ class PlaySession:
     def conclude(self):
         """
         Conclude the play session.
-        
+
         Saves player data to database and displays farewell message.
         """
         self.db.update_user_data(self.player)

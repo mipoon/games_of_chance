@@ -11,7 +11,7 @@ import sys
 def clear_output() -> None:
     """
     Clear the console output in a cross-platform way.
-    
+
     Attempts to use the appropriate system command for clearing the screen.
     Falls back to printing newlines if system commands are not available.
     """
@@ -29,7 +29,7 @@ def clear_output() -> None:
 def clear_output_simple() -> None:
     """
     Simple screen clearing using newlines.
-    
+
     A basic fallback method that simulates clearing by printing
     many newlines. Works on all platforms but less elegant.
     """
@@ -39,7 +39,7 @@ def clear_output_simple() -> None:
 def clear_output_ansi() -> None:
     """
     Clear screen using ANSI escape sequences.
-    
+
     Uses ANSI escape codes to clear the screen and move cursor to top.
     Works on most modern terminals but may not work in all environments.
     """

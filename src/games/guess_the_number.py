@@ -12,20 +12,20 @@ from .abstract_game import AbstractGame
 class GuessTheNumber(AbstractGame):
     """
     Number guessing game with inverse scoring.
-    
+
     Players guess a number between 1-10, and earn more tokens the farther
     their guess is from the actual number. This creates a unique strategic
     element where being wrong is actually better.
     """
-    
+
     def _play_game(self) -> int:
         """
         Execute the guess the number game logic.
-        
+
         Prompts the player to guess a number between 1-10, generates a random
         target number, and calculates tokens based on the distance between
         the guess and the target.
-        
+
         Returns:
             int: Number of tokens earned based on guess accuracy (inverse)
         """

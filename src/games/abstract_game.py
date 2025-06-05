@@ -11,11 +11,11 @@ from abc import ABC, abstractmethod
 class AbstractGame(ABC):
     """
     Abstract base class for all games in the application.
-    
+
     Provides common token management functionality and defines the
     interface that all concrete games must implement.
     """
-    
+
     def __init__(self) -> None:
         """Initialize a new game instance with zero tokens."""
         super().__init__()
@@ -24,7 +24,7 @@ class AbstractGame(ABC):
     def add_tokens(self, number_of_tokens: int) -> None:
         """
         Add tokens to the game's token count.
-        
+
         Args:
             number_of_tokens: Number of tokens to add
         """
@@ -34,10 +34,10 @@ class AbstractGame(ABC):
     def _play_game(self) -> int:
         """
         Implement the core game logic in concrete classes.
-        
+
         This method should contain the main game interaction and
         return the number of tokens earned from playing.
-        
+
         Returns:
             int: Number of tokens earned from the game
         """
@@ -45,10 +45,10 @@ class AbstractGame(ABC):
     def play(self) -> int:
         """
         Execute the game and handle token rewards.
-        
+
         Calls the concrete game implementation, displays results,
         and manages token accumulation.
-        
+
         Returns:
             int: Total tokens accumulated by this game instance
         """
@@ -60,7 +60,7 @@ class AbstractGame(ABC):
     def get_tokens(self) -> int:
         """
         Get the current token count for this game instance.
-        
+
         Returns:
             int: Current number of tokens
         """

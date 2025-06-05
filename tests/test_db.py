@@ -2,8 +2,8 @@ from unittest.mock import Mock, patch
 from sqlite3 import IntegrityError
 import pytest
 from sqlalchemy.orm.exc import NoResultFound
-from db import Database
-from player import Player
+from src.db import Database
+from src.player import Player
 
 # pylint: disable=redefined-outer-name
 
@@ -28,7 +28,7 @@ def mock_user():
 @pytest.fixture
 def database():
     """Create a Database instance."""
-    with patch('db.init_db'):
+    with patch('src.db.init_db'):
         return Database()
 
 
@@ -41,7 +41,7 @@ def test_does_user_exist_true(database, mock_session, mock_user, capsys):
     """Test does_user_exist when user exists."""
     mock_session.query.return_value.filter.return_value.one.return_value = mock_user
 
-    with patch('db.SessionLocal', return_value=mock_session):
+    with patch('src.db.SessionLocal', return_value=mock_session):
         result = database.does_user_exist("test_user")
 
     assert result is True
@@ -53,7 +53,7 @@ def test_does_user_exist_false(database, mock_session, capsys):
     """Test does_user_exist when user does not exist."""
     mock_session.query.return_value.filter.return_value.one.side_effect = NoResultFound()
 
-    with patch('db.SessionLocal', return_value=mock_session):
+    with patch('src.db.SessionLocal', return_value=mock_session):
         result = database.does_user_exist("nonexistent_user")
 
     assert result is False
@@ -65,7 +65,7 @@ def test_get_user_data_success(database, mock_session, mock_user):
     """Test get_user_data when user exists."""
     mock_session.query.return_value.filter.return_value.one.return_value = mock_user
 
-    with patch('db.SessionLocal', return_value=mock_session):
+    with patch('src.db.SessionLocal', return_value=mock_session):
         result = database.get_user_data("test_user")
 
     expected = {"tokens": 50, "prizes": [["Cat"], [], [], []]}
@@ -76,7 +76,7 @@ def test_get_user_data_not_found(database, mock_session, capsys):
     """Test get_user_data when user does not exist."""
     mock_session.query.return_value.filter.return_value.one.side_effect = NoResultFound()
 
-    with patch('db.SessionLocal', return_value=mock_session):
+    with patch('src.db.SessionLocal', return_value=mock_session):
         result = database.get_user_data("nonexistent_user")
 
     assert result is None
@@ -88,8 +88,8 @@ def test_add_user_data_success(database, mock_session, capsys):
     """Test add_user_data successful creation."""
     mock_user = Mock()
 
-    with patch('db.SessionLocal', return_value=mock_session), \
-         patch('db.User', return_value=mock_user):
+    with patch('src.db.SessionLocal', return_value=mock_session), \
+         patch('src.db.User', return_value=mock_user):
         result = database.add_user_data("new_user")
 
     mock_session.add.assert_called_once_with(mock_user)
@@ -105,8 +105,8 @@ def test_add_user_data_integrity_error(database, mock_session, capsys):
     mock_user = Mock()
     mock_session.commit.side_effect = IntegrityError("Duplicate entry", None, None)
 
-    with patch('db.SessionLocal', return_value=mock_session), \
-         patch('db.User', return_value=mock_user):
+    with patch('src.db.SessionLocal', return_value=mock_session), \
+         patch('src.db.User', return_value=mock_user):
         result = database.add_user_data("duplicate_user")
 
     mock_session.rollback.assert_called_once()
@@ -124,7 +124,7 @@ def test_update_user_data(database, mock_session, mock_user, capsys):
 
     mock_session.query.return_value.filter.return_value.one.return_value = mock_user
 
-    with patch('db.SessionLocal', return_value=mock_session):
+    with patch('src.db.SessionLocal', return_value=mock_session):
         database.update_user_data(player)
 
     assert mock_user.tokens == 100

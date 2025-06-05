@@ -14,11 +14,11 @@ from .roll_the_dice import RollTheDice
 class GameLoader:
     """
     Manages the game library and provides random game selection.
-    
+
     Maintains a collection of available games and provides methods
     to randomly select and instantiate games for play sessions.
     """
-    
+
     # Available games in the library
     game_library = [GuessTheNumber, HeadsOrTails, RollTheDice]
 
@@ -26,7 +26,7 @@ class GameLoader:
     def pick_random_game():
         """
         Randomly select and instantiate a game from the library.
-        
+
         Returns:
             AbstractGame: A new instance of a randomly selected game
         """
@@ -37,7 +37,7 @@ class GameLoader:
     def get_available_games():
         """
         Get a list of all available game classes.
-        
+
         Returns:
             list: List of game classes available in the library
         """
@@ -47,7 +47,7 @@ class GameLoader:
     def get_game_count():
         """
         Get the total number of available games.
-        
+
         Returns:
             int: Number of games in the library
         """

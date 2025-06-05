@@ -1,5 +1,5 @@
 import pytest
-from player import Player
+from src.player import Player
 
 
 @pytest.fixture(name="player")

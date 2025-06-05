@@ -13,15 +13,15 @@ from .player import Player
 class PrizeBooth:
     """
     Manages the prize booth where players spend tokens to win prizes.
-    
+
     Handles rarity probability calculations, prize selection, and duplicate
     prize refunds based on rarity-specific refund rates.
     """
-    
+
     def __init__(self, player: Player) -> None:
         """
         Initialize the prize booth with a player.
-        
+
         Args:
             player: The player who will be spending tokens
         """
@@ -30,7 +30,7 @@ class PrizeBooth:
     def spend_tokens(self) -> None:
         """
         Main prize booth interaction loop.
-        
+
         Allows players to spend tokens on prizes while they have sufficient
         funds (minimum 20 tokens required). Handles rarity selection,
         prize rolling, and duplicate refunds.
@@ -48,12 +48,12 @@ class PrizeBooth:
                     if spend_tokens < 0:
                         print("You cannot spend a negative amount of tokens.")
                         continue
-                        
+
                     user_rarity = input(
                         "'Common'\n'Odd'\n'Rare'\n'Epic'\n'Legendary'\n\n"
                         "Enter your desired rarity, or 'None': "
                     ).lower()
-                    
+
                     if user_rarity not in [
                         "common", "odd", "rare", "epic", "legendary", "none"
                     ]:
@@ -99,11 +99,11 @@ class PrizeBooth:
     def spend_for_rarity(self, user_rarity: str, tokens: int) -> tuple[str, int]:
         """
         Calculate rarity based on tokens spent and desired rarity.
-        
+
         Args:
             user_rarity: Desired rarity category or 'none'
             tokens: Number of tokens to spend on rarity enhancement
-            
+
         Returns:
             tuple: (actual_rarity_rolled, extra_tokens_refunded)
         """
@@ -157,24 +157,24 @@ class PrizeBooth:
     def select_prize(self, rarity: str) -> str:
         """
         Randomly select a prize from the specified rarity category.
-        
+
         Args:
             rarity: The rarity category to select from
-            
+
         Returns:
             str: The selected prize name
-            
+
         Raises:
             ValueError: If rarity is not a valid category
         """
         # Prize collections by rarity
         prize_pools = {
             "common": [
-                "Cat", "Dog", "Gerbil", "Guinea Pig", 
+                "Cat", "Dog", "Gerbil", "Guinea Pig",
                 "Hamster", "Mouse", "Pig", "Starfish"
             ],
             "odd": [
-                "Bird", "Chicken", "Fish", "Lizard", 
+                "Bird", "Chicken", "Fish", "Lizard",
                 "Snake", "Spider", "Turkey"
             ],
             "rare": [
@@ -196,11 +196,11 @@ class PrizeBooth:
     def refund_rerolls(self, prize: str, rarity: str) -> int:
         """
         Calculate refund for duplicate prizes based on rarity.
-        
+
         Args:
             prize: The prize that was won
             rarity: The rarity category of the prize
-            
+
         Returns:
             int: Number of tokens to refund (0 if not a duplicate)
         """
@@ -211,13 +211,13 @@ class PrizeBooth:
             "epic": 10,
             "legendary": 20
         }
-        
+
         rarity_categories = ["common", "odd", "rare", "epic", "legendary"]
         rarity_index = rarity_categories.index(rarity)
-        
+
         if prize in self.user.prizes[rarity_index]:
             refund_amount = refund_rates[rarity]
             print(f"You already own this prize, refunding {refund_amount} tokens")
             return refund_amount
-        
+
         return 0
