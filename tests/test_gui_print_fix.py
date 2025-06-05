@@ -2,7 +2,6 @@
 Test for the GUI print fix - ensuring multiple arguments to print work correctly.
 This test covers the specific bug that was causing the GUI to crash.
 """
-import pytest
 from unittest.mock import Mock, patch
 from gui import GUIGameWrapper
 

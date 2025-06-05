@@ -3,13 +3,12 @@ Comprehensive tests for gui.py module using pytest framework.
 Converted from unittest and expanded for better coverage.
 """
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 import tkinter as tk
 import queue
 import threading
-import time
-from gui import GameGUI, GUIPlaySession, GUIGameWrapper, GUIPrizeBooth, run_gui
-from player import Player
+from src.gui import GameGUI, GUIPlaySession, GUIGameWrapper, GUIPrizeBooth, run_gui
+from src.player import Player
 
 
 class TestGameGUI:
@@ -50,7 +49,7 @@ class TestGameGUI:
     def test_game_gui_init_with_auto_start(self, root):
         """Test GameGUI initialization with auto_start=True"""
         with patch.object(GameGUI, 'start_game') as mock_start:
-            gui = GameGUI(root, auto_start=True)
+            GameGUI(root, auto_start=True)
             mock_start.assert_called_once()
             
     def test_add_to_conversation(self, gui):

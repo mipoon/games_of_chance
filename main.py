@@ -1,19 +1,27 @@
 """
-Games of Chance with Prizes:
-1. Password
-2. Tokens
-3. Rarities
-4. Prizes
-5. Re-rolls
-6. 1 hour timer
+Games of Chance with Prizes
+
+A collection of mini-games where players can earn tokens and win prizes.
+Features include:
+- Multiple chance-based games (number guessing, coin flip, dice roll)
+- Token-based economy
+- Prize system with different rarities (common, odd, rare, epic, legendary)
+- Both console and GUI interfaces
+- Player data persistence
 """
 
 import sys
-from play_session import PlaySession
-from gui import run_gui
+from src.play_session import PlaySession
+from src.gui import run_gui
+
 
 def main():
-    """Main entry point - supports both console and GUI modes"""
+    """
+    Main entry point for the Games of Chance application.
+    
+    Supports both console and GUI modes. Can be launched with --gui flag
+    for direct GUI mode, otherwise prompts user for mode selection.
+    """
     if len(sys.argv) > 1 and sys.argv[1] == "--gui":
         run_gui()
     else:
@@ -24,5 +32,6 @@ def main():
         else:
             PlaySession().run_session()
 
-if __name__ == "__main__": # pragma: no cover
+
+if __name__ == "__main__":  # pragma: no cover
     main()

@@ -1,12 +1,16 @@
+"""
+GUI Module
+
+Provides a graphical user interface for the Games of Chance application
+using tkinter. Supports threaded game execution with real-time updates.
+"""
+
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
+from tkinter import ttk, scrolledtext
 import threading
 import queue
-from play_session import PlaySession
-from player import Player
-from prize_booth import PrizeBooth
-from db import Database
-from games.game_loader import GameLoader
+from .play_session import PlaySession
+from .games.game_loader import GameLoader
 from time import sleep
 
 
@@ -464,7 +468,7 @@ class GUIPrizeBooth:
 def run_gui():
     """Run the GUI version of the game"""
     root = tk.Tk()
-    app = GameGUI(root)
+    GameGUI(root)
     root.mainloop()
 
 
