@@ -57,7 +57,7 @@ class Database:
         session.close()
 
 
-# TODO: Implement password protection roughly based on mock behavior below. DO NOT REMOVE commented out code below!
+# TODO: Implement password protection roughly based on mock behavior below
 # def password():
 #     '''
 #     Protected with the password 'Room2617'.
