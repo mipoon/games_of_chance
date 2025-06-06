@@ -82,8 +82,7 @@ class TestGUIPrintFix:
         mock_output.assert_called_once_with("Value: 42 3.14 True None\n")
 
     @patch('builtins.print')
-    @patch('builtins.input')
-    def test_monkey_patching_print_with_multiple_args(self, mock_input, mock_original_print):
+    def test_monkey_patching_print_with_multiple_args(self, mock_original_print):
         """Test that the monkey patching correctly handles multiple print arguments"""
         mock_game = Mock()
         mock_gui_input = Mock()

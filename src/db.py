@@ -114,7 +114,7 @@ class Database:
             print("User data updated successfully.")
         except NoResultFound:
             print(f"User {player.name} not found for update.")
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             session.rollback()
             print(f"Error updating user data: {e}")
         finally:

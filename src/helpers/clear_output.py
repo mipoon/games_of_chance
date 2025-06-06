@@ -21,7 +21,7 @@ def clear_output() -> None:
             os.system('cls')
         else:  # Unix/Linux/MacOS
             os.system('clear')
-    except Exception:
+    except Exception:  # pylint: disable=broad-exception-caught
         # Fallback method: print newlines to simulate clearing
         print("\n" * 100)
 
@@ -47,6 +47,6 @@ def clear_output_ansi() -> None:
         # ANSI escape sequence to clear screen and move cursor to home
         sys.stdout.write('\033[2J\033[H')
         sys.stdout.flush()
-    except Exception:
+    except Exception:  # pylint: disable=broad-exception-caught
         # Fallback to simple method
         clear_output_simple()

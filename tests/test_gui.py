@@ -13,7 +13,7 @@ from src.gui import GameGUI, GUIPlaySession, GUIGameWrapper, GUIPrizeBooth, run_
 from src.player import Player
 
 
-class TestGameGUI:
+class TestGameGUI:  # pylint: disable=too-many-public-methods
     """Test the main GameGUI class"""
 
     @pytest.fixture
@@ -358,9 +358,8 @@ class TestGUIPlaySession:
         assert any("mini-games" in msg for msg in messages)
 
     @patch('src.gui.GUIPlaySession.gui_input')
-    @patch('src.gui.GUIPlaySession.gui_print')
     @patch('src.gui.GUIPlaySession.update_player_display')
-    def test_setup_player_new(self, mock_update, mock_print, mock_input):
+    def test_setup_player_new(self, mock_update, mock_input):
         """Test setting up a new player"""
         input_queue = queue.Queue()
         output_queue = queue.Queue()
@@ -380,9 +379,8 @@ class TestGUIPlaySession:
             mock_update.assert_called_once()
 
     @patch('src.gui.GUIPlaySession.gui_input')
-    @patch('src.gui.GUIPlaySession.gui_print')
     @patch('src.gui.GUIPlaySession.update_player_display')
-    def test_setup_player_existing(self, mock_update, mock_print, mock_input):
+    def test_setup_player_existing(self, mock_update, mock_input):
         """Test setting up an existing player"""
         input_queue = queue.Queue()
         output_queue = queue.Queue()
@@ -403,11 +401,10 @@ class TestGUIPlaySession:
             assert session.player.prizes == [["Cat"], [], [], [], []]
             mock_update.assert_called_once()
 
-    @patch('src.gui.GUIGameWrapper')
-    @patch('src.games.game_loader.GameLoader.pick_random_game')
     @patch('src.gui.GUIPlaySession.update_player_display')
-    @patch('time.sleep')
-    def test_play_games(self, mock_sleep, mock_update, mock_pick_game, mock_wrapper_class):
+    @patch('src.games.game_loader.GameLoader.pick_random_game')
+    @patch('src.gui.GUIGameWrapper')
+    def test_play_games(self, mock_wrapper_class, mock_pick_game, mock_update):
         """Test playing games"""
         input_queue = queue.Queue()
         output_queue = queue.Queue()
@@ -503,9 +500,7 @@ class TestGUIGameWrapper:
         assert wrapper.gui_input == mock_input
         assert wrapper.gui_print == mock_output
 
-    @patch('builtins.input')
-    @patch('builtins.print')
-    def test_play_with_monkey_patching(self, mock_print, mock_input):
+    def test_play_with_monkey_patching(self):
         """Test that play method correctly monkey patches input/output"""
         mock_game = Mock()
         mock_game.play.return_value = 50
@@ -534,9 +529,9 @@ class TestGUIGameWrapper:
         wrapper.play()
 
         # Check that builtins were restored
-        import builtins
-        assert builtins.input == original_input
-        assert builtins.print == original_print
+        import builtins  # pylint: disable=import-outside-toplevel
+        assert builtins.input == original_input  # pylint: disable=comparison-with-callable
+        assert builtins.print == original_print  # pylint: disable=comparison-with-callable
 
     @patch('builtins.input')
     @patch('builtins.print')
@@ -556,9 +551,9 @@ class TestGUIGameWrapper:
             wrapper.play()
 
         # Check that builtins were restored despite exception
-        import builtins
-        assert builtins.input == original_input
-        assert builtins.print == original_print
+        import builtins  # pylint: disable=import-outside-toplevel
+        assert builtins.input == original_input  # pylint: disable=comparison-with-callable
+        assert builtins.print == original_print  # pylint: disable=comparison-with-callable
 
 
 class TestGUIPrizeBooth:
@@ -685,9 +680,8 @@ class TestGUIPrizeBooth:
         assert booth.refund_rerolls("Butterfly", "epic") == 10
         assert booth.refund_rerolls("Elephant", "legendary") == 20
 
-    @patch('time.sleep')
     @patch('random.choice')
-    def test_spend_tokens_single_round(self, mock_choice, mock_sleep, booth, player):
+    def test_spend_tokens_single_round(self, mock_choice, booth, player):
         """Test spending tokens for one round"""
         player.tokens = 50
 
@@ -702,9 +696,7 @@ class TestGUIPrizeBooth:
         # Should have spent 10 + 20 = 30 tokens, gained 1 back (10 % 3)
         assert player.tokens == 21  # 50 - 10 - 20 + 1
 
-    @patch('time.sleep')
-    @patch('random.choice')
-    def test_spend_tokens_insufficient_tokens(self, mock_choice, mock_sleep, booth, player):
+    def test_spend_tokens_insufficient_tokens(self, booth, player):
         """Test spending tokens when insufficient tokens"""
         player.tokens = 15  # Less than 20 required
 
@@ -713,9 +705,8 @@ class TestGUIPrizeBooth:
         # Should not enter the spending loop
         booth.gui_input.assert_not_called()
 
-    @patch('time.sleep')
     @patch('random.choice')
-    def test_spend_tokens_negative_amount(self, mock_choice, mock_sleep, booth, player):
+    def test_spend_tokens_negative_amount(self, mock_choice, booth, player):
         """Test spending negative amount of tokens"""
         player.tokens = 50
 
@@ -730,9 +721,8 @@ class TestGUIPrizeBooth:
         # Should have called gui_print with error message
         booth.gui_print.assert_any_call("You cannot spend a negative amount of tokens.")
 
-    @patch('time.sleep')
     @patch('random.choice')
-    def test_spend_tokens_invalid_rarity(self, mock_choice, mock_sleep, booth, player):
+    def test_spend_tokens_invalid_rarity(self, mock_choice, booth, player):
         """Test spending tokens with invalid rarity"""
         player.tokens = 50
 
@@ -747,9 +737,8 @@ class TestGUIPrizeBooth:
         # Should have called gui_print with error message
         booth.gui_print.assert_any_call("\nYou must enter a valid rarity\n")
 
-    @patch('time.sleep')
     @patch('random.choice')
-    def test_spend_tokens_invalid_number(self, mock_choice, mock_sleep, booth, player):
+    def test_spend_tokens_invalid_number(self, mock_choice, booth, player):
         """Test spending tokens with invalid number input"""
         player.tokens = 50
 
@@ -764,9 +753,8 @@ class TestGUIPrizeBooth:
         # Should have called gui_print with error message
         booth.gui_print.assert_any_call("\nERROR: Enter a valid numerical value:\n")
 
-    @patch('time.sleep')
     @patch('random.choice')
-    def test_spend_tokens_continue_playing(self, mock_choice, mock_sleep, booth, player):
+    def test_spend_tokens_continue_playing(self, mock_choice, booth, player):
         """Test continuing to play multiple rounds"""
         player.tokens = 100
 
@@ -786,9 +774,8 @@ class TestGUIPrizeBooth:
         # Should have played two rounds
         assert booth.gui_input.call_count == 6  # 2 amounts + 2 rarities + 2 continue/exit prompts
 
-    @patch('time.sleep')
     @patch('random.choice')
-    def test_spend_tokens_invalid_continue_response(self, mock_choice, mock_sleep, booth, player):
+    def test_spend_tokens_invalid_continue_response(self, mock_choice, booth, player):
         """Test invalid response to continue/exit prompt"""
         player.tokens = 50
 
@@ -805,9 +792,8 @@ class TestGUIPrizeBooth:
 
 
 
-    @patch('time.sleep')
     @patch('random.choice')
-    def test_spend_tokens_with_refund(self, mock_choice, mock_sleep, booth, player):
+    def test_spend_tokens_with_refund(self, mock_choice, booth, player):
         """Test spending tokens with refund for duplicate prize"""
         player.tokens = 50
         player.prizes[0] = ["Cat"]  # Already own this prize

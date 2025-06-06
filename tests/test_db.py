@@ -133,3 +133,39 @@ def test_update_user_data(database, mock_session, mock_user, capsys):
     mock_session.close.assert_called_once()
     capture = capsys.readouterr()
     assert "User data updated successfully." in capture.out
+
+
+def test_update_user_data_user_not_found(database, mock_session, capsys):
+    """Test update_user_data when user is not found."""
+    player = Player()
+    player.name = "nonexistent_user"
+    player.tokens = 100
+    player.prizes = [["Dog"], ["Bird"], [], []]
+
+    mock_session.query.return_value.filter.return_value.one.side_effect = NoResultFound()
+
+    with patch('src.db.SessionLocal', return_value=mock_session):
+        database.update_user_data(player)
+
+    mock_session.close.assert_called_once()
+    capture = capsys.readouterr()
+    assert "User nonexistent_user not found for update." in capture.out
+
+
+def test_update_user_data_general_exception(database, mock_session, mock_user, capsys):
+    """Test update_user_data when a general exception occurs."""
+    player = Player()
+    player.name = "test_user"
+    player.tokens = 100
+    player.prizes = [["Dog"], ["Bird"], [], []]
+
+    mock_session.query.return_value.filter.return_value.one.return_value = mock_user
+    mock_session.commit.side_effect = Exception("Database error")
+
+    with patch('src.db.SessionLocal', return_value=mock_session):
+        database.update_user_data(player)
+
+    mock_session.rollback.assert_called_once()
+    mock_session.close.assert_called_once()
+    capture = capsys.readouterr()
+    assert "Error updating user data: Database error" in capture.out

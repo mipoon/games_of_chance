@@ -89,7 +89,7 @@ class GameGUI:
         try:
             self.play_session = GUIPlaySession(self.input_queue, self.output_queue)
             self.play_session.run_session()
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             self.output_queue.put(f"Error: {str(e)}\n")
         finally:
             self.output_queue.put("GAME_ENDED")
@@ -103,7 +103,7 @@ class GameGUI:
                     self.game_running = False
                     self.add_to_conversation("Game ended. You can close the window.\n")
                     return
-                elif message == "WAITING_FOR_INPUT":
+                if message == "WAITING_FOR_INPUT":
                     self.waiting_for_input = True
                     self.input_entry.config(state=tk.NORMAL)
                     self.send_button.config(state=tk.NORMAL)
@@ -138,7 +138,7 @@ class GameGUI:
             self.tokens_label.config(text=f"Tokens: {tokens}")
             self.prizes_label.config(text=f"Prizes: {total_prizes}")
 
-    def send_input(self, event=None):
+    def send_input(self, _event=None):
         """Send user input to the game"""
         if self.waiting_for_input:
             user_input = self.input_entry.get()
@@ -295,7 +295,7 @@ class GUIGameWrapper:
     def play(self):
         """Play the game with GUI I/O"""
         # Monkey patch the game's input/output
-        import builtins
+        import builtins  # pylint: disable=import-outside-toplevel
         original_input = builtins.input
         original_print = builtins.print
 
@@ -379,7 +379,7 @@ class GUIPrizeBooth:
 
     def spend_for_rarity(self, user_rarity, tokens):
         """Same logic as original PrizeBooth"""
-        from random import choice
+        from random import choice  # pylint: disable=import-outside-toplevel
 
         add_percent = tokens // 3
         extra = tokens % 3
@@ -427,7 +427,7 @@ class GUIPrizeBooth:
 
     def select_prize(self, rarity):
         """Same logic as original PrizeBooth"""
-        from random import choice
+        from random import choice  # pylint: disable=import-outside-toplevel
 
         common = ["Cat", "Dog", "Gerbil", "Guinea Pig", "Hamster", "Mouse", "Pig", "Starfish"]
         odd = ["Bird", "Chicken", "Fish", "Lizard", "Snake", "Spider", "Turkey"]
